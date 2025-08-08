@@ -8,7 +8,7 @@ import {
   SidebarMenuButton,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { ChefHat, Settings, Soup } from "lucide-react";
+import { Settings, Soup } from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/logo";
 import { usePathname } from "next/navigation";

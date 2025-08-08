@@ -21,12 +21,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <SidebarProvider>
-          <div className="flex">
+          <div className="flex bg-muted/40">
             <AppSidebar />
-            <main className="flex-1 p-8 bg-gray-50">{children}</main>
+            <main className="flex-1 p-8">{children}</main>
           </div>
+          <Toaster />
         </SidebarProvider>
-        <Toaster />
       </body>
     </html>
   );
