@@ -8,23 +8,35 @@ import {
   SidebarMenuButton,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import { ChefHat, Settings } from "lucide-react";
+import { ChefHat, Settings, Soup } from "lucide-react";
+import Link from "next/link";
+import Logo from "@/components/logo";
+import { usePathname } from "next/navigation";
 
 export default function AppSidebar() {
+  const pathname = usePathname();
+
   return (
     <Sidebar>
       <SidebarHeader>
-        <div className="flex items-center gap-2">
-          <ChefHat className="w-8 h-8" />
-          <h1 className="text-xl font-semibold">Mealie Transformer</h1>
-        </div>
+        <Logo />
       </SidebarHeader>
       <SidebarMenu>
         <SidebarMenuItem>
-          <SidebarMenuButton>
-            <Settings className="w-5 h-5" />
-            Settings
-          </SidebarMenuButton>
+          <Link href="/">
+            <SidebarMenuButton isActive={pathname === "/"}>
+              <Soup />
+              Recipe
+            </SidebarMenuButton>
+          </Link>
+        </SidebarMenuItem>
+        <SidebarMenuItem>
+          <Link href="/settings">
+            <SidebarMenuButton isActive={pathname === "/settings"}>
+              <Settings />
+              Settings
+            </SidebarMenuButton>
+          </Link>
         </SidebarMenuItem>
       </SidebarMenu>
       <SidebarFooter></SidebarFooter>

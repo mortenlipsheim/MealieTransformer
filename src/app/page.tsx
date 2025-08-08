@@ -1,16 +1,20 @@
+import Link from "next/link";
 import RecipeInput from "./recipe-input";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
 
 export default function Home() {
   return (
     <div>
-      <h1 className="text-4xl font-bold">Mealie Transformer</h1>
-      <p className="text-gray-600 mt-2">
-        Transform and translate recipes from any source for your Mealie
-        instance.
-      </p>
-      <div className="mt-8">
-        <RecipeInput />
+      <div className="flex items-center gap-4 mb-8">
+        <Link href="/">
+          <Button variant="outline" size="icon">
+            <ArrowLeft className="w-4 h-4" />
+          </Button>
+        </Link>
+        <h1 className="text-4xl font-bold">Mealie Transformer</h1>
       </div>
+      <RecipeInput />
     </div>
   );
 }
