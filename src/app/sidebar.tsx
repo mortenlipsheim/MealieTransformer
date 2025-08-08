@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -12,9 +13,11 @@ import { Settings, Soup } from "lucide-react";
 import Link from "next/link";
 import Logo from "@/components/logo";
 import { usePathname } from "next/navigation";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function AppSidebar() {
   const pathname = usePathname();
+  const { t } = useTranslation();
 
   return (
     <Sidebar>
@@ -26,7 +29,7 @@ export default function AppSidebar() {
           <Link href="/">
             <SidebarMenuButton isActive={pathname === "/"}>
               <Soup />
-              Recipe
+              {t('Recipe')}
             </SidebarMenuButton>
           </Link>
         </SidebarMenuItem>
@@ -34,7 +37,7 @@ export default function AppSidebar() {
           <Link href="/settings">
             <SidebarMenuButton isActive={pathname === "/settings"}>
               <Settings />
-              Settings
+              {t('Settings')}
             </SidebarMenuButton>
           </Link>
         </SidebarMenuItem>

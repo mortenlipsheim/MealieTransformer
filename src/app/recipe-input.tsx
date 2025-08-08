@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
 import { handleExtractRecipe } from "./actions";
 import type { Recipe } from "@/lib/schema";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function RecipeInput() {
   const [source, setSource] = useState("");
@@ -25,6 +26,7 @@ export default function RecipeInput() {
   const router = useRouter();
   const { toast } = useToast();
   const [, setRecipe] = useLocalStorage<Recipe | null>("recipe", null);
+  const { t } = useTranslation();
 
   const onTransform = async (source: string) => {
     setLoading(true);
@@ -32,7 +34,7 @@ export default function RecipeInput() {
     if (error) {
       toast({
         variant: "destructive",
-        title: "Error",
+        title: t("Error"),
         description: error,
       });
     } else if (data) {
@@ -58,8 +60,8 @@ export default function RecipeInput() {
     } else {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Please enter a URL.",
+        title: t("Error"),
+        description: t("Please enter a URL."),
       });
     }
   };
@@ -70,8 +72,8 @@ export default function RecipeInput() {
     } else {
       toast({
         variant: "destructive",
-        title: "Error",
-        description: "Please enter recipe text.",
+        title: t("Error"),
+        description: t("Please enter recipe text."),
       });
     }
   };
@@ -79,38 +81,38 @@ export default function RecipeInput() {
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
-        <CardTitle className="font-headline text-3xl">Recipe Input</CardTitle>
+        <CardTitle className="font-headline text-3xl">{t('Recipe Input')}</CardTitle>
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="url">
           <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="url">URL</TabsTrigger>
-            <TabsTrigger value="text">Text</TabsTrigger>
-            <TabsTrigger value="image" disabled>Image</TabsTrigger>
-            <TabsTrigger value="youtube" disabled>YouTube</TabsTrigger>
+            <TabsTrigger value="url">{t('URL')}</TabsTrigger>
+            <TabsTrigger value="text">{t('Text')}</TabsTrigger>
+            <TabsTrigger value="image" disabled>{t('Image')}</TabsTrigger>
+            <TabsTrigger value="youtube" disabled>{t('YouTube')}</TabsTrigger>
           </TabsList>
           <TabsContent value="url">
             <div className="mt-4 space-y-4">
               <Input
-                placeholder="https://example.com/recipe"
+                placeholder={t("https://example.com/recipe")}
                 value={source}
                 onChange={(e) => setSource(e.target.value)}
               />
                <Button onClick={handleUrlTransform} disabled={loading} className="w-full">
-                {loading ? 'Transforming...' : 'Transform'}
+                {loading ? t('Transforming...') : t('Transform')}
               </Button>
             </div>
           </TabsContent>
           <TabsContent value="text">
             <div className="mt-4 space-y-4">
               <Textarea
-                placeholder="Paste your recipe text here..."
+                placeholder={t("Paste your recipe text here...")}
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 rows={10}
               />
               <Button onClick={handleTextTransform} disabled={loading} className="w-full">
-                {loading ? 'Transforming...' : 'Transform'}
+                {loading ? t('Transforming...') : t('Transform')}
               </Button>
             </div>
           </TabsContent>

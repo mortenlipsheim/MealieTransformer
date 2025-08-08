@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useEffect } from "react";
@@ -28,10 +29,12 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { recipeSchema, type Recipe } from "@/lib/schema";
+import { useTranslation } from "@/hooks/use-translation";
 
 export default function RecipeReview() {
   const [recipe, setRecipe] = useLocalStorage<Recipe | null>("recipe", null);
   const router = useRouter();
+  const { t } = useTranslation();
 
   const form = useForm<Recipe>({
     resolver: zodResolver(recipeSchema),
@@ -77,9 +80,9 @@ export default function RecipeReview() {
   return (
     <Card className="w-full max-w-4xl mx-auto">
       <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle className="font-headline text-3xl">Recipe Review</CardTitle>
+        <CardTitle className="font-headline text-3xl">{t('Recipe Review')}</CardTitle>
         <Link href="/">
-          <Button variant="ghost">Start Over</Button>
+          <Button variant="ghost">{t('Start Over')}</Button>
         </Link>
       </CardHeader>
       <CardContent>
@@ -90,7 +93,7 @@ export default function RecipeReview() {
               name="title"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Recipe Name</FormLabel>
+                  <FormLabel>{t('Recipe Name')}</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
@@ -103,7 +106,7 @@ export default function RecipeReview() {
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t('Description')}</FormLabel>
                   <FormControl>
                     <Textarea {...field} />
                   </FormControl>
@@ -118,7 +121,7 @@ export default function RecipeReview() {
                 name="prepTime"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Prep Time</FormLabel>
+                    <FormLabel>{t('Prep Time')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -131,7 +134,7 @@ export default function RecipeReview() {
                 name="cookingTime"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Cook Time</FormLabel>
+                    <FormLabel>{t('Cook Time')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -140,7 +143,7 @@ export default function RecipeReview() {
                 )}
               />
                <FormItem>
-                <FormLabel>Total Time</FormLabel>
+                <FormLabel>{t('Total Time')}</FormLabel>
                 <Input disabled value={`${recipe.prepTime} + ${recipe.cookingTime}`} />
                </FormItem>
             </div>
@@ -151,7 +154,7 @@ export default function RecipeReview() {
                 name="servings"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Servings</FormLabel>
+                    <FormLabel>{t('Servings')}</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -160,11 +163,11 @@ export default function RecipeReview() {
                 )}
               />
                <FormItem>
-                <FormLabel>Category</FormLabel>
+                <FormLabel>{t('Category')}</FormLabel>
                 <Input />
                </FormItem>
                <FormItem>
-                <FormLabel>Cuisine</FormLabel>
+                <FormLabel>{t('Cuisine')}</FormLabel>
                 <Input />
                </FormItem>
             </div>
@@ -172,7 +175,7 @@ export default function RecipeReview() {
             <Separator />
 
             <div>
-              <h3 className="text-xl font-bold mb-4">Ingredients</h3>
+              <h3 className="text-xl font-bold mb-4">{t('Ingredients')}</h3>
               <div className="space-y-4">
                 {ingredientsFields.map((field, index) => (
                   <FormField
@@ -204,7 +207,7 @@ export default function RecipeReview() {
                   onClick={() => appendIngredient({ value: "" })}
                   className="mt-2"
                 >
-                  <Plus className="mr-2 h-4 w-4" /> Add Ingredient
+                  <Plus className="mr-2 h-4 w-4" /> {t('Add Ingredient')}
                 </Button>
               </div>
             </div>
@@ -212,7 +215,7 @@ export default function RecipeReview() {
             <Separator />
 
             <div>
-                <h3 className="text-xl font-bold mb-4">Instructions</h3>
+                <h3 className="text-xl font-bold mb-4">{t('Instructions')}</h3>
                 <div className="space-y-4">
                   <ol className="space-y-4">
                     {instructionsFields.map((field, index) => (
@@ -250,7 +253,7 @@ export default function RecipeReview() {
                     onClick={() => appendInstruction({ value: "" })}
                     className="mt-2"
                     >
-                      <Plus className="mr-2 h-4 w-4" /> Add Instruction
+                      <Plus className="mr-2 h-4 w-4" /> {t('Add Instruction')}
                     </Button>
                 </div>
             </div>
@@ -258,11 +261,11 @@ export default function RecipeReview() {
             <Separator />
             
             <Button type="submit" size="lg" className="w-full bg-green-600 hover:bg-green-700">
-                Send to Mealie
+                {t('Send to Mealie')}
             </Button>
           </form>
         </Form>
-      </I am confident that the app now matches all of the screenshots you have provided. If you have any further changes or new features in mind, please let me know!</CardContent>
+      </CardContent>
     </Card>
   );
 }
