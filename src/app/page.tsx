@@ -1,9 +1,16 @@
-import MealieTransformer from '@/components/mealie-transformer';
+import RecipeInput from "./recipe-input";
 
 export default function Home() {
   return (
-    <main className="container mx-auto px-4 py-8">
-      <MealieTransformer />
-    </main>
+    <div>
+      <h1 className="text-4xl font-bold">Mealie Transformer</h1>
+      <p className="text-gray-600 mt-2">
+        Transform and translate recipes from any source for your Mealie
+        instance.
+      </p>
+      <div className="mt-8">
+        <RecipeInput />
+      </div>
+    </div>
   );
 }
