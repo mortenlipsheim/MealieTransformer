@@ -1,4 +1,18 @@
 
+export const uiLanguages: { [key: string]: string } = {
+  en: "English",
+  es: "Spanish",
+  fr: "French",
+};
+
+export const targetLanguages: { [key: string]: string } = {
+  en: "English",
+  es: "Spanish",
+  fr: "French",
+  de: "German",
+  it: "Italian",
+};
+
 export const translations: { [key: string]: { [key: string]: string } } = {
   en: {
     "Mealie Transformer": "Mealie Transformer",

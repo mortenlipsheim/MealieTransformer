@@ -20,6 +20,7 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
+import { uiLanguages, targetLanguages } from "@/lib/translations";
 
 export default function SettingsPage() {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
@@ -56,9 +57,9 @@ export default function SettingsPage() {
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="en">{t('English')}</SelectItem>
-                <SelectItem value="es">{t('Spanish')}</SelectItem>
-                <SelectItem value="fr">{t('French')}</SelectItem>
+                {Object.entries(uiLanguages).map(([code, name]) => (
+                  <SelectItem key={code} value={code}>{name}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -69,11 +70,9 @@ export default function SettingsPage() {
                 <SelectValue placeholder="Select language" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="en">{t('English')}</SelectItem>
-                <SelectItem value="es">{t('Spanish')}</SelectItem>
-                <SelectItem value="fr">{t('French')}</SelectItem>
-                <SelectItem value="de">{t('German')}</SelectItem>
-                <SelectItem value="it">{t('Italian')}</SelectItem>
+                {Object.entries(targetLanguages).map(([code, name]) => (
+                  <SelectItem key={code} value={code}>{t(name)}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
