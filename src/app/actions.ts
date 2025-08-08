@@ -1,3 +1,4 @@
+
 'use server';
 
 import {
@@ -12,6 +13,7 @@ import {
   convertUnitsToPreferredSystem,
   type ConvertUnitsToPreferredSystemInput,
 } from '@/ai/flows/convert-units';
+import { extractRecipeFromImage } from '@/ai/flows/extract-recipe-from-image';
 import type { Recipe } from '@/lib/schema';
 
 type ActionResult<T> = { data: T; error: null } | { data: null; error: string };
@@ -43,10 +45,10 @@ function recipeOutputToString(recipe: ExtractRecipeDataOutput): string {
     if (recipe.servings) {
         text += `Servings: ${recipe.servings}\n`;
     }
-    if (recipe.ingredients) {
+    if (recipe.ingredients && recipe.ingredients.length > 0) {
         text += `Ingredients:\n${recipe.ingredients.join('\n')}\n`;
     }
-    if (recipe.instructions) {
+    if (recipe.instructions && recipe.instructions.length > 0) {
         text += `Instructions:\n${recipe.instructions.join('\n')}\n`;
     }
     return text;
@@ -57,10 +59,12 @@ export async function handleRecipeTransform({
   source,
   targetLanguage,
   measurementSystem,
+  isImage = false,
 }: {
   source: string;
   targetLanguage: string;
   measurementSystem: 'metric' | 'us';
+  isImage?: boolean;
 }): Promise<ActionResult<Recipe>> {
   if (!source) {
     return { data: null, error: 'Source cannot be empty.' };
@@ -68,13 +72,19 @@ export async function handleRecipeTransform({
 
   try {
     let content = source;
-    const isUrl = source.startsWith('http');
-    if (isUrl) {
-      content = await fetchHtml(source);
-    }
+    let extractedData: ExtractRecipeDataOutput;
+    let isUrl = false;
 
-    // 1. Extract recipe data
-    const extractedData = await extractRecipeData({ source: content });
+    if (isImage) {
+        extractedData = await extractRecipeFromImage({ imageDataUri: source });
+    } else {
+        isUrl = source.startsWith('http');
+        if (isUrl) {
+            content = await fetchHtml(source);
+        }
+         // 1. Extract recipe data
+        extractedData = await extractRecipeData({ source: content });
+    }
     
     let recipeText = recipeOutputToString(extractedData);
 

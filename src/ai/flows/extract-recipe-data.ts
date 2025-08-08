@@ -1,3 +1,4 @@
+
 'use server';
 
 /**
@@ -60,7 +61,7 @@ const extractRecipeDataPrompt = ai.definePrompt({
 `,
 });
 
-const extractRecipeDataFlow = ai.defineFlow(
+export const extractRecipeDataFlow = ai.defineFlow(
   {
     name: 'extractRecipeDataFlow',
     inputSchema: ExtractRecipeDataInputSchema,
