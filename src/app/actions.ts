@@ -3,18 +3,15 @@
 
 import {
   extractRecipeData,
-  type ExtractRecipeDataOutput,
 } from '@/ai/flows/extract-recipe-data';
 import {
   translateRecipe,
-  type TranslateRecipeInput,
 } from '@/ai/flows/translate-recipe';
 import {
   convertUnitsToPreferredSystem,
-  type ConvertUnitsToPreferredSystemInput,
 } from '@/ai/flows/convert-units';
 import { extractRecipeFromImage } from '@/ai/flows/extract-recipe-from-image';
-import type { Recipe } from '@/lib/schema';
+import type { Recipe, ExtractedRecipeData } from '@/lib/schema';
 
 type ActionResult<T> = { data: T; error: null } | { data: null; error: string };
 
@@ -31,7 +28,7 @@ async function fetchHtml(url: string): Promise<string> {
   }
 }
 
-function recipeOutputToString(recipe: ExtractRecipeDataOutput): string {
+function recipeOutputToString(recipe: ExtractedRecipeData): string {
     let text = `Title: ${recipe.title || ''}\n`;
     if (recipe.description) {
         text += `Description: ${recipe.description}\n`;
@@ -72,7 +69,7 @@ export async function handleRecipeTransform({
 
   try {
     let content = source;
-    let extractedData: ExtractRecipeDataOutput;
+    let extractedData: ExtractedRecipeData;
     let isUrl = false;
 
     if (isImage) {

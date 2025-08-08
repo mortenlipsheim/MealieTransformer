@@ -10,10 +10,9 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import {
-  extractRecipeDataFlow,
-  type ExtractRecipeDataOutput,
-} from './extract-recipe-data';
+import { extractRecipeData, type ExtractRecipeDataOutput } from './extract-recipe-data';
+import { extractedRecipeDataSchema } from '@/lib/schema';
+
 
 const ExtractRecipeFromImageInputSchema = z.object({
   imageDataUri: z
@@ -47,7 +46,7 @@ const extractRecipeFromImageFlow = ai.defineFlow(
   {
     name: 'extractRecipeFromImageFlow',
     inputSchema: ExtractRecipeFromImageInputSchema,
-    outputSchema: ExtractRecipeDataOutput,
+    outputSchema: extractedRecipeDataSchema,
   },
   async (input): Promise<ExtractRecipeDataOutput> => {
     // First, extract the raw text from the image
@@ -57,6 +56,6 @@ const extractRecipeFromImageFlow = ai.defineFlow(
     }
     
     // Then, use the existing text extraction flow to structure the data
-    return await extractRecipeDataFlow({source: textOutput.recipeText});
+    return await extractRecipeData({source: textOutput.recipeText});
   }
 );

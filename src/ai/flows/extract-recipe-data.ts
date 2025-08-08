@@ -16,22 +16,15 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import { extractedRecipeDataSchema, type ExtractedRecipeData } from '@/lib/schema';
+
 
 const ExtractRecipeDataInputSchema = z.object({
   source: z.string().describe('The HTML content or text of the recipe to extract data from.'),
 });
 export type ExtractRecipeDataInput = z.infer<typeof ExtractRecipeDataInputSchema>;
 
-const ExtractRecipeDataOutputSchema = z.object({
-  title: z.string().optional().describe('The title of the recipe.'),
-  description: z.string().optional().describe('A short summary of the recipe.'),
-  ingredients: z.array(z.string()).optional().describe('The list of ingredients for the recipe.'),
-  instructions: z.array(z.string()).optional().describe('The step-by-step instructions for the recipe.'),
-  cookingTime: z.string().optional().describe('The total cooking time for the recipe.'),
-  prepTime: z.string().optional().describe('The preparation time for the recipe.'),
-  servings: z.string().optional().describe('The number of servings the recipe makes.'),
-});
-export type ExtractRecipeDataOutput = z.infer<typeof ExtractRecipeDataOutputSchema>;
+export type ExtractRecipeDataOutput = ExtractedRecipeData;
 
 export async function extractRecipeData(input: ExtractRecipeDataInput): Promise<ExtractRecipeDataOutput> {
   return extractRecipeDataFlow(input);
@@ -40,7 +33,7 @@ export async function extractRecipeData(input: ExtractRecipeDataInput): Promise<
 const extractRecipeDataPrompt = ai.definePrompt({
   name: 'extractRecipeDataPrompt',
   input: {schema: ExtractRecipeDataInputSchema},
-  output: {schema: ExtractRecipeDataOutputSchema},
+  output: {schema: extractedRecipeDataSchema},
   prompt: `You are a recipe data extraction expert.
 
   Your task is to extract the following information from the given recipe source (which could be HTML content or plain text):
@@ -61,11 +54,11 @@ const extractRecipeDataPrompt = ai.definePrompt({
 `,
 });
 
-export const extractRecipeDataFlow = ai.defineFlow(
+const extractRecipeDataFlow = ai.defineFlow(
   {
     name: 'extractRecipeDataFlow',
     inputSchema: ExtractRecipeDataInputSchema,
-    outputSchema: ExtractRecipeDataOutputSchema,
+    outputSchema: extractedRecipeDataSchema,
   },
   async input => {
     const {output} = await extractRecipeDataPrompt(input);
