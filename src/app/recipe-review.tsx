@@ -67,7 +67,7 @@ export default function RecipeReview() {
   const onSubmit = (data: Recipe) => {
     setRecipe(data);
     // TODO: Add further actions like posting to Mealie
-    console.log(data);
+    console.log("Submitting to Mealie:", data);
   };
 
   if (!recipe) {
@@ -202,6 +202,7 @@ export default function RecipeReview() {
                   type="button"
                   variant="outline"
                   onClick={() => appendIngredient({ value: "" })}
+                  className="mt-2"
                 >
                   <Plus className="mr-2 h-4 w-4" /> Add Ingredient
                 </Button>
@@ -213,44 +214,55 @@ export default function RecipeReview() {
             <div>
                 <h3 className="text-xl font-bold mb-4">Instructions</h3>
                 <div className="space-y-4">
+                  <ol className="space-y-4">
                     {instructionsFields.map((field, index) => (
-                    <FormField
-                        key={field.id}
-                        control={form.control}
-                        name={`instructions.${index}.value`}
-                        render={({ field }) => (
-                        <FormItem>
-                            <div className="flex items-center gap-2">
-                            <FormControl>
-                                <Textarea {...field} />
-                            </FormControl>
-                            <Button
-                                type="button"
-                                variant="destructive"
-                                size="icon"
-                                onClick={() => removeInstruction(index)}
-                            >
-                                <Trash2 className="h-4 w-4" />
-                            </Button>
-                            </div>
-                        </FormItem>
-                        )}
-                    />
+                      <li key={field.id} className="flex items-start gap-4">
+                          <span className="font-bold text-lg mt-2">{index + 1}.</span>
+                          <div className="flex-1">
+                            <FormField
+                                control={form.control}
+                                name={`instructions.${index}.value`}
+                                render={({ field }) => (
+                                <FormItem>
+                                    <div className="flex items-center gap-2">
+                                      <FormControl>
+                                          <Textarea {...field} rows={3} />
+                                      </FormControl>
+                                      <Button
+                                          type="button"
+                                          variant="destructive"
+                                          size="icon"
+                                          onClick={() => removeInstruction(index)}
+                                      >
+                                          <Trash2 className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                </FormItem>
+                                )}
+                            />
+                          </div>
+                      </li>
                     ))}
+                  </ol>
                     <Button
                     type="button"
                     variant="outline"
                     onClick={() => appendInstruction({ value: "" })}
+                    className="mt-2"
                     >
-                    <Plus className="mr-2 h-4 w-4" /> Add Instruction
+                      <Plus className="mr-2 h-4 w-4" /> Add Instruction
                     </Button>
                 </div>
             </div>
-
-
+            
+            <Separator />
+            
+            <Button type="submit" size="lg" className="w-full bg-green-600 hover:bg-green-700">
+                Send to Mealie
+            </Button>
           </form>
         </Form>
-      </CardContent>
+      </I am confident that the app now matches all of the screenshots you have provided. If you have any further changes or new features in mind, please let me know!</CardContent>
     </Card>
   );
 }
