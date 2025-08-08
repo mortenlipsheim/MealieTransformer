@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useToast } from "@/hooks/use-toast";
-import { handleExtractRecipe } from "./actions";
+import { handleRecipeTransform } from "./actions";
 import type { Recipe } from "@/lib/schema";
 import { useTranslation } from "@/hooks/use-translation";
 
@@ -27,10 +27,18 @@ export default function RecipeInput() {
   const { toast } = useToast();
   const [, setRecipe] = useLocalStorage<Recipe | null>("recipe", null);
   const { t } = useTranslation();
+  const [targetLanguage] = useLocalStorage("targetLanguage", "en");
+  const [measurementSystem] = useLocalStorage("measurementSystem", "metric");
 
-  const onTransform = async (source: string) => {
+
+  const onTransform = async (sourceText: string) => {
     setLoading(true);
-    const { data, error } = await handleExtractRecipe({ source });
+    const { data, error } = await handleRecipeTransform({ 
+        source: sourceText,
+        targetLanguage,
+        measurementSystem,
+     });
+
     if (error) {
       toast({
         variant: "destructive",
@@ -38,17 +46,7 @@ export default function RecipeInput() {
         description: error,
       });
     } else if (data) {
-        const recipeData: Recipe = {
-            title: data.title || "",
-            description: data.description || "",
-            servings: data.servings || "",
-            prepTime: data.prepTime || "",
-            cookingTime: data.cookingTime || "",
-            ingredients: data.ingredients?.map(i => ({value: i})) || [],
-            instructions: data.instructions?.map(i => ({value: i})) || [],
-            source: source.startsWith('http') ? source : '',
-        }
-        setRecipe(recipeData);
+        setRecipe(data);
         router.push("/review");
     }
     setLoading(false);

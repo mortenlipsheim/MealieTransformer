@@ -17,12 +17,13 @@ import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
 const ExtractRecipeDataInputSchema = z.object({
-  source: z.string().describe('The URL or text of the recipe to extract data from.'),
+  source: z.string().describe('The HTML content or text of the recipe to extract data from.'),
 });
 export type ExtractRecipeDataInput = z.infer<typeof ExtractRecipeDataInputSchema>;
 
 const ExtractRecipeDataOutputSchema = z.object({
   title: z.string().optional().describe('The title of the recipe.'),
+  description: z.string().optional().describe('A short summary of the recipe.'),
   ingredients: z.array(z.string()).optional().describe('The list of ingredients for the recipe.'),
   instructions: z.array(z.string()).optional().describe('The step-by-step instructions for the recipe.'),
   cookingTime: z.string().optional().describe('The total cooking time for the recipe.'),
@@ -41,18 +42,21 @@ const extractRecipeDataPrompt = ai.definePrompt({
   output: {schema: ExtractRecipeDataOutputSchema},
   prompt: `You are a recipe data extraction expert.
 
-  Your task is to extract the following information from the given recipe source (either URL content or plain text):
+  Your task is to extract the following information from the given recipe source (which could be HTML content or plain text):
   - Recipe Title
+  - Description
   - Ingredients (as a list of strings)
   - Instructions (as a list of strings)
   - Cooking Time
   - Prep Time
   - Servings
 
-  Source: {{{source}}}
+  Source:
+  {{{source}}}
 
   Please provide the extracted information in JSON format.
   If a particular piece of information is not available, omit that field from the JSON output.
+  Focus on the main recipe content and ignore irrelevant parts of the page like headers, footers, or ads.
 `,
 });
 
