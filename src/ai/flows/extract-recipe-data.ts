@@ -34,7 +34,7 @@ const extractRecipeDataPrompt = ai.definePrompt({
   name: 'extractRecipeDataPrompt',
   input: {schema: ExtractRecipeDataInputSchema},
   output: {schema: extractedRecipeDataSchema},
-  model: 'gemini-pro',
+  model: 'googleai/gemini-pro',
   prompt: `You are a recipe data extraction expert.
 
   Your task is to extract the following information from the given recipe source (which could be HTML content or plain text):
