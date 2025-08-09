@@ -7,5 +7,4 @@ export const ai = genkit({
       apiVersion: 'v1',
     }),
   ],
-  defaultModel: 'gemini-pro',
 });
