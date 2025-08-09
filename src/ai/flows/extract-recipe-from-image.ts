@@ -35,7 +35,6 @@ const extractRecipeFromImagePrompt = ai.definePrompt({
   name: 'extractRecipeFromImagePrompt',
   input: {schema: ExtractRecipeFromImageInputSchema},
   output: {schema: z.object({recipeText: z.string().describe("The full text of the recipe extracted from the image.")})},
-  model: 'googleai/gemini-1.5-flash-latest',
   prompt: `You are an expert at extracting text from images of recipes.
 
   Extract all the text from the following image.

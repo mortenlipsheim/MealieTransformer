@@ -30,7 +30,6 @@ const prompt = ai.definePrompt({
   name: 'translateRecipePrompt',
   input: {schema: TranslateRecipeInputSchema},
   output: {schema: TranslateRecipeOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
   prompt: `Translate the following recipe to {{{targetLanguage}}}.\n\nRecipe:\n{{{recipeText}}}`,
 });
 
