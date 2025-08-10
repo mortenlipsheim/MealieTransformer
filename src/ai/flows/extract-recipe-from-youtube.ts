@@ -40,7 +40,7 @@ const extractRecipeFromYoutubePrompt = ai.definePrompt({
 
   From the video, please extract the full text of the recipe, including the list of ingredients with quantities and the step-by-step instructions.
 
-  YouTube URL to analyze: {{{youtubeUrl}}}
+  Video to analyze: {{video url=youtubeUrl}}
   `,
 });
 
