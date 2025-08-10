@@ -32,7 +32,7 @@ export async function extractRecipeFromYoutube(
 
 const extractRecipeFromYoutubePrompt = ai.definePrompt({
   name: 'extractRecipeFromYoutubePrompt',
-  input: {schema: z.object({video: z.any()})},
+  input: {schema: z.object({youtubeUrl: z.string()})},
   output: {schema: ExtractRecipeFromYoutubeOutputSchema},
   model: 'googleai/gemini-1.5-flash-latest',
   prompt: `You are an expert chef and recipe extractor. Your task is to watch the cooking video from the provided YouTube URL.
@@ -41,7 +41,7 @@ const extractRecipeFromYoutubePrompt = ai.definePrompt({
 
   From the video, please extract the full text of the recipe, including the list of ingredients with quantities and the step-by-step instructions.
 
-  YouTube Video: {{{video}}}
+  YouTube Video: {{media url=youtubeUrl}}
   `,
 });
 
@@ -52,13 +52,7 @@ const extractRecipeFromYoutubeFlow = ai.defineFlow(
     outputSchema: ExtractRecipeFromYoutubeOutputSchema,
   },
   async (input): Promise<ExtractRecipeFromYoutubeOutput> => {
-    const videoPart: MediaPart = {
-        media: {
-            url: input.youtubeUrl,
-            contentType: 'video/mp4',
-        }
-    };
-    const {output} = await extractRecipeFromYoutubePrompt({video: videoPart});
+    const {output} = await extractRecipeFromYoutubePrompt(input);
     if (!output?.recipeText) {
         throw new Error("Could not extract any recipe text from the YouTube video.");
     }
