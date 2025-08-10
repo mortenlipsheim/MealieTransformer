@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { Button } from "@/components/ui/button";
@@ -23,8 +23,9 @@ import Image from "next/image";
 import { Camera, Upload, X } from "lucide-react";
 
 export default function RecipeInput() {
-  const [source, setSource] = useState("");
+  const [url, setUrl] = useState("");
   const [text, setText] = useState("");
+  const [youtubeUrl, setYoutubeUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -41,33 +42,34 @@ export default function RecipeInput() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  const startVideoStream = useCallback(async () => {
+    // Ensure this runs only on the client
+    if (typeof window === 'undefined' || !navigator.mediaDevices) {
+      return;
+    }
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({video: { facingMode: 'environment' }});
+      setHasCameraPermission(true);
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+    } catch (error) {
+      console.error('Error accessing camera:', error);
+      setHasCameraPermission(false);
+      toast({
+        variant: 'destructive',
+        title: t('Camera Access Denied'),
+        description: t('Please enable camera permissions in your browser settings to use this feature.'),
+      });
+    }
+  }, [t, toast]);
+
 
   useEffect(() => {
-    const getCameraPermission = async () => {
-      // Ensure this runs only on the client and only for the image tab
-      if (typeof window === 'undefined' || !navigator.mediaDevices || activeTab !== 'image') {
-        return;
-      }
-
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({video: { facingMode: 'environment' }});
-        setHasCameraPermission(true);
-
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-        }
-      } catch (error) {
-        console.error('Error accessing camera:', error);
-        setHasCameraPermission(false);
-        toast({
-          variant: 'destructive',
-          title: t('Camera Access Denied'),
-          description: t('Please enable camera permissions in your browser settings to use this feature.'),
-        });
-      }
-    };
-
-    getCameraPermission();
+    if (activeTab === 'image') {
+      startVideoStream();
+    }
 
     // Cleanup function to stop video tracks when the component unmounts or tab changes
     return () => {
@@ -76,16 +78,17 @@ export default function RecipeInput() {
         stream.getTracks().forEach(track => track.stop());
       }
     }
-  }, [t, toast, activeTab]);
+  }, [activeTab, startVideoStream]);
 
 
-  const onTransform = async () => {
+  const onTransform = async (sourceType: 'url' | 'text' | 'image' | 'youtube', source?: string, sourceImages?: string[]) => {
     setLoading(true);
     const { data, error } = await handleRecipeTransform({
-        sourceImages: imageSources,
+        source,
+        sourceImages,
         targetLanguage,
         measurementSystem,
-        isImage: true,
+        sourceType,
      });
 
     if (error) {
@@ -101,62 +104,27 @@ export default function RecipeInput() {
     setLoading(false);
   };
 
-  const handleUrlTransform = async () => {
-    if (source) {
-      setLoading(true);
-      const { data, error } = await handleRecipeTransform({
-          source: source,
-          targetLanguage,
-          measurementSystem,
-      });
-
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: t("Error"),
-          description: error,
-        });
-      } else if (data) {
-          setRecipe(data);
-          router.push("/review");
-      }
-      setLoading(false);
-
+  const handleUrlTransform = () => {
+    if (url) {
+      onTransform('url', url);
     } else {
-      toast({
-        variant: "destructive",
-        title: t("Error"),
-        description: t("Please enter a URL."),
-      });
+      toast({ variant: "destructive", title: t("Error"), description: t("Please enter a URL.") });
     }
   };
 
-  const handleTextTransform = async () => {
+  const handleTextTransform = () => {
     if (text) {
-       setLoading(true);
-       const { data, error } = await handleRecipeTransform({
-           source: text,
-           targetLanguage,
-           measurementSystem,
-       });
-
-       if (error) {
-         toast({
-           variant: "destructive",
-           title: t("Error"),
-           description: error,
-         });
-       } else if (data) {
-           setRecipe(data);
-           router.push("/review");
-       }
-       setLoading(false);
+       onTransform('text', text);
     } else {
-      toast({
-        variant: "destructive",
-        title: t("Error"),
-        description: t("Please enter recipe text."),
-      });
+      toast({ variant: "destructive", title: t("Error"), description: t("Please enter recipe text.") });
+    }
+  };
+
+  const handleYoutubeTransform = () => {
+    if (youtubeUrl) {
+      onTransform('youtube', youtubeUrl);
+    } else {
+      toast({ variant: "destructive", title: t("Error"), description: "Please enter a YouTube URL." });
     }
   };
 
@@ -201,7 +169,7 @@ export default function RecipeInput() {
 
   const handleImageTransform = () => {
     if (imageSources.length > 0) {
-      onTransform();
+      onTransform('image', undefined, imageSources);
     } else {
         toast({
             variant: "destructive",
@@ -222,19 +190,19 @@ export default function RecipeInput() {
         <CardTitle className="font-headline text-3xl">{t('Recipe Input')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="url" onValueChange={setActiveTab}>
+        <Tabs defaultValue="url" onValueChange={setActiveTab} value={activeTab}>
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="url">{t('URL')}</TabsTrigger>
             <TabsTrigger value="text">{t('Text')}</TabsTrigger>
             <TabsTrigger value="image">{t('Image')}</TabsTrigger>
-            <TabsTrigger value="youtube" disabled>{t('YouTube')}</TabsTrigger>
+            <TabsTrigger value="youtube">{t('YouTube')}</TabsTrigger>
           </TabsList>
           <TabsContent value="url">
             <div className="mt-4 space-y-4">
               <Input
                 placeholder={t("https://example.com/recipe")}
-                value={source}
-                onChange={(e) => setSource(e.target.value)}
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
               />
                <Button onClick={handleUrlTransform} disabled={loading} className="w-full">
                 {loading ? t('Transforming...') : t('Transform')}
@@ -277,8 +245,8 @@ export default function RecipeInput() {
                 )}
 
                  <div className="flex gap-2">
-                    <Button onClick={takePhoto} disabled={!hasCameraPermission} className="w-full"> <Camera className="mr-2"/> {t('Take Photo')}</Button>
-                    <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="w-full"><Upload className="mr-2"/>{t('Upload Image')}</Button>
+                    <Button onClick={takePhoto} disabled={!hasCameraPermission || loading} className="w-full"> <Camera className="mr-2"/> {t('Take Photo')}</Button>
+                    <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="w-full" disabled={loading}><Upload className="mr-2"/>{t('Upload Image')}</Button>
                     <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} className="hidden" />
                  </div>
 
@@ -307,6 +275,18 @@ export default function RecipeInput() {
                  <Button onClick={handleImageTransform} disabled={loading || imageSources.length === 0} className="w-full">
                     {loading ? t('Transforming...') : t('Transform')}
                 </Button>
+            </div>
+          </TabsContent>
+          <TabsContent value="youtube">
+             <div className="mt-4 space-y-4">
+              <Input
+                placeholder="https://www.youtube.com/watch?v=..."
+                value={youtubeUrl}
+                onChange={(e) => setYoutubeUrl(e.target.value)}
+              />
+               <Button onClick={handleYoutubeTransform} disabled={loading} className="w-full">
+                {loading ? t('Transforming...') : t('Transform')}
+              </Button>
             </div>
           </TabsContent>
         </Tabs>

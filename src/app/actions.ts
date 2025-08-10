@@ -2,6 +2,7 @@
 'use server';
 
 import { extractRecipeFromImage } from '@/ai/flows/extract-recipe-from-image';
+import { extractRecipeFromYoutube } from '@/ai/flows/extract-recipe-from-youtube';
 import { transformRecipe } from '@/ai/flows/transform-recipe';
 import type { Recipe } from '@/lib/schema';
 
@@ -25,52 +26,53 @@ export async function handleRecipeTransform({
   sourceImages,
   targetLanguage,
   measurementSystem,
-  isImage = false,
+  sourceType = 'text',
 }: {
   source?: string;
   sourceImages?: string[];
   targetLanguage: string;
   measurementSystem: 'metric' | 'us';
-  isImage?: boolean;
+  sourceType: 'url' | 'text' | 'image' | 'youtube';
 }): Promise<ActionResult<Recipe>> {
 
   try {
     let content: string | undefined = source;
     let finalData: Recipe;
-    let isUrl = false;
 
-    if (isImage) {
+    if (sourceType === 'image') {
         if (!sourceImages || sourceImages.length === 0) {
             return { data: null, error: 'No images provided for transformation.' };
         }
-      // If it's an image, we first extract the text content from all images.
       const extractedTextData = await extractRecipeFromImage({ imageDataUris: sourceImages });
-      // Then we pass that text to the universal transform flow.
-      finalData = await transformRecipe({
-        source: extractedTextData.recipeText,
+      content = extractedTextData.recipeText;
+
+    } else if (sourceType === 'youtube') {
+        if (!source) {
+            return { data: null, error: 'YouTube URL cannot be empty.' };
+        }
+        const extractedTextData = await extractRecipeFromYoutube({ youtubeUrl: source });
+        content = extractedTextData.recipeText;
+
+    } else if (sourceType === 'url') {
+        if (!source) {
+            return { data: null, error: 'URL cannot be empty.' };
+        }
+        content = await fetchHtml(source);
+    }
+
+    if (!content) {
+        return { data: null, error: 'Could not resolve recipe content from the source.' };
+    }
+
+    finalData = await transformRecipe({
+        source: content,
         targetLanguage,
         measurementSystem,
-      });
-
-    } else {
-        if (!source) {
-            return { data: null, error: 'Source cannot be empty.' };
-        }
-        isUrl = source.startsWith('http');
-        if (isUrl) {
-            content = await fetchHtml(source);
-        }
-        // For URL or text, we call the universal transform flow directly.
-        finalData = await transformRecipe({
-            source: content,
-            targetLanguage,
-            measurementSystem,
-        });
-    }
+    });
 
     const recipeData: Recipe = {
       ...finalData,
-      source: isUrl ? source : '',
+      source: (sourceType === 'url' || sourceType === 'youtube') ? source : '',
     };
 
     return { data: recipeData, error: null };
