@@ -178,7 +178,7 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     "Upload Image": "Télécharger une Image",
     "Please take a photo or upload an image.": "Veuillez prendre une photo ou télécharger une image.",
     "Camera Access Required": "Accès Caméra Requis",
-    "Please allow camera access to use this feature.": "Veuillez autoriser l'accès à la caméra pour utiliser cette fonctionnalité.",
+    "Veuillez autoriser l'accès à la caméra pour utiliser cette fonctionnalité.": "Veuillez autoriser l'accès à la caméra pour utiliser cette fonctionnalité.",
     "Mealie Settings": "Paramètres Mealie",
     "Configure the connection to your Mealie instance.": "Configurez la connexion à votre instance Mealie.",
     "Mealie URL": "URL Mealie",
