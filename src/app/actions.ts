@@ -93,22 +93,23 @@ export async function sendToMealie({
     }
 
     try {
-        const mealieApiUrl = new URL('/api/recipes', mealieUrl).toString();
+        const mealieApiUrl = new URL('/api/recipes/create/html-or-json', mealieUrl).toString();
 
         const payload = {
             name: recipe.title,
             description: recipe.description,
-            recipe_yield: recipe.servings,
-            prep_time: recipe.prepTime,
-            cook_time: recipe.cookingTime,
-            recipe_ingredient: recipe.ingredients?.map(i => ({ note: i.value, title: '' })),
-            recipe_instructions: recipe.instructions?.map(i => ({ text: i.value, title: '' })),
+            recipeYield: recipe.servings,
+            prepTime: recipe.prepTime,
+            totalTime: recipe.cookingTime,
+            recipeIngredient: recipe.ingredients?.map(i => ({ note: i.value, title: '' })),
+            recipeInstructions: recipe.instructions?.map(i => ({ text: i.value, title: '' })),
             org_url: recipe.source,
         };
 
         const response = await fetch(mealieApiUrl, {
             method: 'POST',
             headers: {
+                'Accept': 'application/json',
                 'Content-Type': 'application/json',
                 'Authorization': `Bearer ${mealieApiToken}`,
             },
