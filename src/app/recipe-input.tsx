@@ -32,6 +32,7 @@ export default function RecipeInput() {
   const { t } = useTranslation();
   const [targetLanguage] = useLocalStorage("targetLanguage", "en");
   const [measurementSystem] = useLocalStorage("measurementSystem", "metric");
+  const [activeTab, setActiveTab] = useState("url");
 
   // Image states
   const [imageSrc, setImageSrc] = useState<string | null>(null);
@@ -43,11 +44,16 @@ export default function RecipeInput() {
 
   useEffect(() => {
     const getCameraPermission = async () => {
-      // Ensure this runs only on the client
-      if (typeof window === 'undefined' || !navigator.mediaDevices) {
-        setHasCameraPermission(false);
+      // Ensure this runs only on the client and only for the image tab
+      if (typeof window === 'undefined' || !navigator.mediaDevices || activeTab !== 'image') {
         return;
       }
+
+      // If we already have a picture, don't re-request the camera
+      if (imageSrc) {
+        return;
+      }
+
       try {
         const stream = await navigator.mediaDevices.getUserMedia({video: true});
         setHasCameraPermission(true);
@@ -67,7 +73,15 @@ export default function RecipeInput() {
     };
 
     getCameraPermission();
-  }, [t, toast]);
+
+    // Cleanup function to stop video tracks when the component unmounts or tab changes
+    return () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+      }
+    }
+  }, [t, toast, activeTab, imageSrc]);
 
 
   const onTransform = async (sourceText: string, isImage = false) => {
@@ -139,6 +153,12 @@ export default function RecipeInput() {
         context.drawImage(video, 0, 0, videoWidth, videoHeight);
         const dataUrl = canvas.toDataURL('image/png');
         setImageSrc(dataUrl);
+
+        // Stop the video stream after taking a photo
+        if (video.srcObject) {
+            const stream = video.srcObject as MediaStream;
+            stream.getTracks().forEach(track => track.stop());
+        }
       }
     }
   };
@@ -149,6 +169,11 @@ export default function RecipeInput() {
       const reader = new FileReader();
       reader.onload = (e) => {
         setImageSrc(e.target?.result as string);
+         // Stop the video stream if it's running
+        if (videoRef.current && videoRef.current.srcObject) {
+            const stream = videoRef.current.srcObject as MediaStream;
+            stream.getTracks().forEach(track => track.stop());
+        }
       };
       reader.readAsDataURL(file);
     }
@@ -166,6 +191,11 @@ export default function RecipeInput() {
     }
   };
 
+  const handleRetake = () => {
+    setImageSrc(null);
+    // The useEffect will handle re-requesting the camera
+  };
+
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -173,7 +203,7 @@ export default function RecipeInput() {
         <CardTitle className="font-headline text-3xl">{t('Recipe Input')}</CardTitle>
       </CardHeader>
       <CardContent>
-        <Tabs defaultValue="url">
+        <Tabs defaultValue="url" onValueChange={setActiveTab}>
           <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="url">{t('URL')}</TabsTrigger>
             <TabsTrigger value="text">{t('Text')}</TabsTrigger>
@@ -232,7 +262,7 @@ export default function RecipeInput() {
 
                  <div className="flex gap-2">
                     {imageSrc ? (
-                         <Button onClick={() => setImageSrc(null)} variant="outline" className="w-full">{t("Retake Photo")}</Button>
+                         <Button onClick={handleRetake} variant="outline" className="w-full">{t("Retake Photo")}</Button>
                     ): (
                         <Button onClick={takePhoto} disabled={!hasCameraPermission} className="w-full"> <Camera className="mr-2"/> {t('Take Photo')}</Button>
                     )}
