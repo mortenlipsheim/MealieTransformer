@@ -43,7 +43,11 @@ export default function RecipeInput() {
 
   useEffect(() => {
     const getCameraPermission = async () => {
-      if (typeof window === 'undefined' || !navigator.mediaDevices) return;
+      // Ensure this runs only on the client
+      if (typeof window === 'undefined' || !navigator.mediaDevices) {
+        setHasCameraPermission(false);
+        return;
+      }
       try {
         const stream = await navigator.mediaDevices.getUserMedia({video: true});
         setHasCameraPermission(true);
@@ -54,11 +58,16 @@ export default function RecipeInput() {
       } catch (error) {
         console.error('Error accessing camera:', error);
         setHasCameraPermission(false);
+        toast({
+          variant: 'destructive',
+          title: t('Camera Access Denied'),
+          description: t('Please enable camera permissions in your browser settings to use this feature.'),
+        });
       }
     };
 
     getCameraPermission();
-  }, []);
+  }, [t, toast]);
 
 
   const onTransform = async (sourceText: string, isImage = false) => {
@@ -190,27 +199,25 @@ export default function RecipeInput() {
                     {imageSrc ? (
                          <Image src={imageSrc} alt="Recipe" layout="fill" objectFit="contain" />
                     ) : (
-                        <>
-                            <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
-                            {hasCameraPermission === false && (
-                                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
-                                    <Alert variant="destructive" className="w-3/4">
-                                        <AlertTitle>{t('Camera Access Required')}</AlertTitle>
-                                        <AlertDescription>
-                                            {t('Please allow camera access to use this feature.')}
-                                        </AlertDescription>
-                                    </Alert>
-                                </div>
-                            )}
-                        </>
+                        <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
                     )}
                     <canvas ref={canvasRef} className="hidden" />
                 </div>
+
+                {hasCameraPermission === false && (
+                    <Alert variant="destructive">
+                        <AlertTitle>{t('Camera Access Required')}</AlertTitle>
+                        <AlertDescription>
+                            {t('Please allow camera access to use this feature.')}
+                        </AlertDescription>
+                    </Alert>
+                )}
+
                  <div className="flex gap-2">
                     {imageSrc ? (
                          <Button onClick={() => setImageSrc(null)} variant="outline" className="w-full">{t("Retake Photo")}</Button>
                     ): (
-                        <Button onClick={takePhoto} disabled={hasCameraPermission === false} className="w-full"> <Camera className="mr-2"/> {t('Take Photo')}</Button>
+                        <Button onClick={takePhoto} disabled={!hasCameraPermission} className="w-full"> <Camera className="mr-2"/> {t('Take Photo')}</Button>
                     )}
                     <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="w-full"><Upload className="mr-2"/>{t('Upload Image')}</Button>
                     <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} className="hidden" />

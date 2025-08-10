@@ -71,6 +71,8 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     "Configure the recipe transformation and translation settings.": "Configure the recipe transformation and translation settings.",
     "Success!": "Success!",
     "Recipe sent to Mealie successfully.": "Recipe sent to Mealie successfully.",
+    "Camera Access Denied": "Camera Access Denied",
+    "Please enable camera permissions in your browser settings to use this feature.": "Please enable camera permissions in your browser settings to use this feature.",
   },
   es: {
     "Mealie Transformer": "Transformador Mealie",
@@ -129,6 +131,8 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     "Configure the recipe transformation and translation settings.": "Configura los ajustes de transformación y traducción de recetas.",
     "Success!": "¡Éxito!",
     "Recipe sent to Mealie successfully.": "Receta enviada a Mealie con éxito.",
+    "Camera Access Denied": "Acceso a la Cámara Denegado",
+    "Please enable camera permissions in your browser settings to use this feature.": "Por favor, habilita los permisos de la cámara en la configuración de tu navegador para usar esta aplicación.",
   },
   fr: {
     "Mealie Transformer": "Transformateur Mealie",
@@ -187,5 +191,7 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     "Configure the recipe transformation and translation settings.": "Configurez les paramètres de transformation et de traduction des recettes.",
     "Success!": "Succès !",
     "Recipe sent to Mealie successfully.": "Recette envoyée à Mealie avec succès.",
+    "Camera Access Denied": "Accès à la caméra refusé",
+    "Please enable camera permissions in your browser settings to use this feature.": "Veuillez activer les autorisations de caméra dans les paramètres de votre navigateur pour utiliser cette fonctionnalité.",
   },
 };
