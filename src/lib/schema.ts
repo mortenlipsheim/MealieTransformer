@@ -19,7 +19,7 @@ export const recipeSchema = z.object({
   ingredients: z.array(z.object({ value: z.string() })).optional(),
   instructions: z.array(z.object({ value: z.string() })).optional(),
   source: z.string().optional(),
-  image: z.string().url().optional(),
+  image: z.string().optional(),
 });
 
 export type Recipe = z.infer<typeof recipeSchema>;
