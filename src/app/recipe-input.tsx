@@ -66,15 +66,13 @@ export default function RecipeInput() {
       }
     };
 
-    if (hasCameraPermission === null) {
-      getCameraPermission();
-    }
-  }, [hasCameraPermission, t, toast]);
+    getCameraPermission();
+  }, [t, toast]);
 
 
   const onTransform = async (sourceText: string, isImage = false) => {
     setLoading(true);
-    const { data, error } = await handleRecipeTransform({ 
+    const { data, error } = await handleRecipeTransform({
         source: sourceText,
         targetLanguage,
         measurementSystem,
@@ -105,7 +103,7 @@ export default function RecipeInput() {
       });
     }
   };
-  
+
   const handleTextTransform = () => {
     if (text) {
       onTransform(text);
@@ -124,7 +122,7 @@ export default function RecipeInput() {
       const canvas = canvasRef.current;
       const videoWidth = video.videoWidth;
       const videoHeight = video.videoHeight;
-  
+
       if (videoWidth === 0 || videoHeight === 0) {
         toast({
           variant: 'destructive',
@@ -213,11 +211,11 @@ export default function RecipeInput() {
                     {imageSrc ? (
                          <Image src={imageSrc} alt="Recipe" layout="fill" objectFit="contain" />
                     ) : (
-                        <video 
-                            ref={videoRef} 
-                            className="w-full h-full object-cover" 
-                            autoPlay 
-                            muted 
+                        <video
+                            ref={videoRef}
+                            className="w-full h-full object-cover"
+                            autoPlay
+                            muted
                         />
                     )}
                     <canvas ref={canvasRef} className="hidden" />
