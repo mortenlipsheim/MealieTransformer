@@ -22,6 +22,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
+import Logo from "@/components/logo";
 
 export default function SettingsPage() {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
@@ -36,14 +37,14 @@ export default function SettingsPage() {
   const { t } = useTranslation();
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-8 w-full max-w-2xl">
       <div className="flex items-center gap-4">
         <Link href="/">
           <Button variant="outline" size="icon">
             <ArrowLeft className="w-4 h-4" />
           </Button>
         </Link>
-        <h1 className="text-4xl font-bold">{t('Mealie Transformer')}</h1>
+        <Logo />
       </div>
 
       <Card>
@@ -88,14 +89,14 @@ export default function SettingsPage() {
             >
               <SelectTrigger id="measurement-system">
                 <SelectValue placeholder="Select system" />
-              </SelectTrigger>
+              </Trigger>
               <SelectContent>
                 <SelectItem value="metric">{t('Metric')}</SelectItem>
                 <SelectItem value="us">{t('US')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
-        </CardContent>
+        </Content>
       </Card>
     </div>
   );
