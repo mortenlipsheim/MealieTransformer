@@ -92,7 +92,7 @@ export default function SettingsPage() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="metric">{t('Metric')}</SelectItem>
-                <SelectItem value="us">{t('US')}</Ite...
+                <SelectItem value="us">{t('US')}</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -101,4 +101,3 @@ export default function SettingsPage() {
     </div>
   );
 }
-
