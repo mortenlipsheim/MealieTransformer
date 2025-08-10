@@ -45,9 +45,6 @@ export default function RecipeReview() {
     setIsClient(true);
   }, []);
 
-  const [mealieUrl] = useLocalStorage("mealieUrl", "");
-  const [mealieApiToken] = useLocalStorage("mealieApiToken", "");
-
   const form = useForm<Recipe>({
     resolver: zodResolver(recipeSchema),
     defaultValues: recipe || {},
@@ -83,11 +80,7 @@ export default function RecipeReview() {
     setRecipe(data);
     setLoading(true);
 
-    const { error } = await sendToMealie({
-        recipe: data,
-        mealieUrl,
-        mealieApiToken,
-    });
+    const { error } = await sendToMealie({ recipe: data });
 
     if (error) {
         toast({

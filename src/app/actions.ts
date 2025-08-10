@@ -81,16 +81,15 @@ export async function handleRecipeTransform({
 
 export async function sendToMealie({
     recipe,
-    mealieUrl,
-    mealieApiToken
 }: {
     recipe: Recipe;
-    mealieUrl: string;
-    mealieApiToken: string;
 }): Promise<ActionResult<{ success: boolean }>> {
 
+    const mealieUrl = process.env.MEALIE_URL;
+    const mealieApiToken = process.env.MEALIE_API_TOKEN;
+
     if (!mealieUrl || !mealieApiToken) {
-        return { data: null, error: "Mealie URL and API Token are required." };
+        return { data: null, error: "Mealie URL and API Token are not configured in environment variables." };
     }
 
     try {
