@@ -41,7 +41,7 @@ const prompt = ai.definePrompt({
   name: 'convertUnitsToPreferredSystemPrompt',
   input: {schema: ConvertUnitsToPreferredSystemInputSchema},
   output: {schema: ConvertUnitsToPreferredSystemOutputSchema},
-  model: 'googleai/gemini-1.5-pro-latest',
+  model: 'googleai/gemini-1.5-flash-latest',
   prompt: `You are a recipe assistant that converts units in a recipe to the user's preferred measurement system.
 
   The user's preferred measurement system is: {{{preferredSystem}}}
