@@ -89,15 +89,16 @@ export default function SettingsPage() {
             >
               <SelectTrigger id="measurement-system">
                 <SelectValue placeholder="Select system" />
-              </Trigger>
+              </SelectTrigger>
               <SelectContent>
                 <SelectItem value="metric">{t('Metric')}</SelectItem>
-                <SelectItem value="us">{t('US')}</SelectItem>
+                <SelectItem value="us">{t('US')}</Ite...
               </SelectContent>
             </Select>
           </div>
-        </Content>
+        </CardContent>
       </Card>
     </div>
   );
 }
+
