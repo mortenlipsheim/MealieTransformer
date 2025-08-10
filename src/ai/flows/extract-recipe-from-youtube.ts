@@ -52,7 +52,7 @@ const extractRecipeFromYoutubeFlow = ai.defineFlow(
     outputSchema: ExtractRecipeFromYoutubeOutputSchema,
   },
   async (input): Promise<ExtractRecipeFromYoutubeOutput> => {
-    
+
     const videoPart: MediaPart = {
         media: {
             url: input.youtubeUrl,
