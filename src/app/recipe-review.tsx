@@ -39,6 +39,11 @@ export default function RecipeReview() {
   const { t } = useTranslation();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
+  const [isClient, setIsClient] = useState(false);
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const [mealieUrl] = useLocalStorage("mealieUrl", "");
   const [mealieApiToken] = useLocalStorage("mealieApiToken", "");
@@ -67,12 +72,12 @@ export default function RecipeReview() {
   });
 
   useEffect(() => {
-    if (!recipe) {
+    if (isClient && !recipe) {
       router.push("/");
-    } else {
+    } else if (recipe) {
       form.reset(recipe);
     }
-  }, [recipe, router, form]);
+  }, [recipe, router, form, isClient]);
 
   const onSubmit = async (data: Recipe) => {
     setRecipe(data);
@@ -101,8 +106,8 @@ export default function RecipeReview() {
     setLoading(false);
   };
 
-  if (!recipe) {
-    return null; // Or a loading spinner
+  if (!isClient || !recipe) {
+    return null; // Or a loading spinner, but null is fine for now
   }
 
   return (
