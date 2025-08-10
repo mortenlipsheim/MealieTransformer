@@ -1,17 +1,9 @@
 
 'use server';
 
-import {
-  extractRecipeData,
-} from '@/ai/flows/extract-recipe-data';
-import {
-  translateRecipe,
-} from '@/ai/flows/translate-recipe';
-import {
-  convertUnitsToPreferredSystem,
-} from '@/ai/flows/convert-units';
 import { extractRecipeFromImage } from '@/ai/flows/extract-recipe-from-image';
-import type { Recipe, ExtractedRecipeData } from '@/lib/schema';
+import { transformRecipe } from '@/ai/flows/transform-recipe';
+import type { Recipe } from '@/lib/schema';
 
 type ActionResult<T> = { data: T; error: null } | { data: null; error: string };
 
@@ -27,30 +19,6 @@ async function fetchHtml(url: string): Promise<string> {
     throw new Error('Could not retrieve content from the provided URL.');
   }
 }
-
-function recipeOutputToString(recipe: ExtractedRecipeData): string {
-    let text = `Title: ${recipe.title || ''}\n`;
-    if (recipe.description) {
-        text += `Description: ${recipe.description}\n`;
-    }
-    if (recipe.prepTime) {
-        text += `Prep Time: ${recipe.prepTime}\n`;
-    }
-    if (recipe.cookingTime) {
-        text += `Cook Time: ${recipe.cookingTime}\n`;
-    }
-    if (recipe.servings) {
-        text += `Servings: ${recipe.servings}\n`;
-    }
-    if (recipe.ingredients && recipe.ingredients.length > 0) {
-        text += `Ingredients:\n${recipe.ingredients.join('\n')}\n`;
-    }
-    if (recipe.instructions && recipe.instructions.length > 0) {
-        text += `Instructions:\n${recipe.instructions.join('\n')}\n`;
-    }
-    return text;
-}
-
 
 export async function handleRecipeTransform({
   source,
@@ -69,48 +37,34 @@ export async function handleRecipeTransform({
 
   try {
     let content = source;
-    let extractedData: ExtractedRecipeData;
+    let finalData: Recipe;
     let isUrl = false;
 
     if (isImage) {
-        extractedData = await extractRecipeFromImage({ imageDataUri: source });
+      // If it's an image, we first extract the text content.
+      const extractedTextData = await extractRecipeFromImage({ imageDataUri: source });
+      // Then we pass that text to the universal transform flow.
+      finalData = await transformRecipe({
+        source: extractedTextData.recipeText,
+        targetLanguage,
+        measurementSystem,
+      });
+
     } else {
         isUrl = source.startsWith('http');
         if (isUrl) {
             content = await fetchHtml(source);
         }
-         // 1. Extract recipe data
-        extractedData = await extractRecipeData({ source: content });
+        // For URL or text, we call the universal transform flow directly.
+        finalData = await transformRecipe({
+            source: content,
+            targetLanguage,
+            measurementSystem,
+        });
     }
-    
-    let recipeText = recipeOutputToString(extractedData);
-
-    // 2. Translate if necessary
-    if (targetLanguage !== 'en') { // Assuming source is primarily English
-        const translated = await translateRecipe({ recipeText, targetLanguage });
-        recipeText = translated.translatedRecipe;
-    }
-
-    // 3. Convert units
-    const converted = await convertUnitsToPreferredSystem({
-        recipeText: recipeText,
-        preferredSystem: measurementSystem,
-    });
-
-    // 4. Re-extract from the final text to get structured data
-    const finalData = await extractRecipeData({ source: converted.convertedRecipeText });
-
 
     const recipeData: Recipe = {
-      title: finalData.title || extractedData.title || '',
-      description: finalData.description || extractedData.description || '',
-      servings: finalData.servings || extractedData.servings || '',
-      prepTime: finalData.prepTime || extractedData.prepTime || '',
-      cookingTime: finalData.cookingTime || extractedData.cookingTime || '',
-      ingredients:
-        finalData.ingredients?.map((i) => ({ value: i })) || [],
-      instructions:
-        finalData.instructions?.map((i) => ({ value: i })) || [],
+      ...finalData,
       source: isUrl ? source : '',
     };
 

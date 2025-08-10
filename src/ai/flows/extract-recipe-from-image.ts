@@ -10,9 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
-import { extractRecipeData, type ExtractRecipeDataOutput } from './extract-recipe-data';
-import { extractedRecipeDataSchema } from '@/lib/schema';
-
 
 const ExtractRecipeFromImageInputSchema = z.object({
   imageDataUri: z
@@ -25,20 +22,26 @@ export type ExtractRecipeFromImageInput = z.infer<
   typeof ExtractRecipeFromImageInputSchema
 >;
 
+const ExtractRecipeFromImageOutputSchema = z.object({
+    recipeText: z.string().describe("The full text of the recipe extracted from the image.")
+});
+export type ExtractRecipeFromImageOutput = z.infer<typeof ExtractRecipeFromImageOutputSchema>;
+
+
 export async function extractRecipeFromImage(
   input: ExtractRecipeFromImageInput
-): Promise<ExtractRecipeDataOutput> {
+): Promise<ExtractRecipeFromImageOutput> {
   return extractRecipeFromImageFlow(input);
 }
 
 const extractRecipeFromImagePrompt = ai.definePrompt({
   name: 'extractRecipeFromImagePrompt',
   input: {schema: ExtractRecipeFromImageInputSchema},
-  output: {schema: z.object({recipeText: z.string().describe("The full text of the recipe extracted from the image.")})},
+  output: {schema: ExtractRecipeFromImageOutputSchema},
   model: 'googleai/gemini-pro-vision',
   prompt: `You are an expert at extracting text from images of recipes.
 
-  Extract all the text from the following image.
+  Extract all the text from the following image. Only return the text of the recipe.
 
   Image: {{media url=imageDataUri}}`,
 });
@@ -47,16 +50,13 @@ const extractRecipeFromImageFlow = ai.defineFlow(
   {
     name: 'extractRecipeFromImageFlow',
     inputSchema: ExtractRecipeFromImageInputSchema,
-    outputSchema: extractedRecipeDataSchema,
+    outputSchema: ExtractRecipeFromImageOutputSchema,
   },
-  async (input): Promise<ExtractRecipeDataOutput> => {
-    // First, extract the raw text from the image
-    const {output: textOutput} = await extractRecipeFromImagePrompt(input);
-    if (!textOutput?.recipeText) {
+  async (input): Promise<ExtractRecipeFromImageOutput> => {
+    const {output} = await extractRecipeFromImagePrompt(input);
+    if (!output?.recipeText) {
         throw new Error("Could not extract any text from the image.");
     }
-    
-    // Then, use the existing text extraction flow to structure the data
-    return await extractRecipeData({source: textOutput.recipeText});
+    return output;
   }
 );
