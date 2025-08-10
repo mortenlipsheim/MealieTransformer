@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
+import type {MediaPart} from 'genkit/model';
 
 const ExtractRecipeFromYoutubeInputSchema = z.object({
   youtubeUrl: z.string().url().describe('The URL of the YouTube cooking video.'),
@@ -31,7 +32,7 @@ export async function extractRecipeFromYoutube(
 
 const extractRecipeFromYoutubePrompt = ai.definePrompt({
   name: 'extractRecipeFromYoutubePrompt',
-  input: {schema: ExtractRecipeFromYoutubeInputSchema},
+  input: {schema: z.object({ video: z.any() })},
   output: {schema: ExtractRecipeFromYoutubeOutputSchema},
   model: 'googleai/gemini-1.5-flash-latest',
   prompt: `You are an expert chef and recipe extractor. Your task is to analyze the cooking video from the following YouTube URL.
@@ -40,7 +41,7 @@ const extractRecipeFromYoutubePrompt = ai.definePrompt({
 
   From the video, please extract the full text of the recipe, including the list of ingredients with quantities and the step-by-step instructions.
 
-  Video to analyze: {{media url=youtubeUrl}}
+  Video to analyze: {{media url=video.url}}
   `,
 });
 
@@ -51,7 +52,15 @@ const extractRecipeFromYoutubeFlow = ai.defineFlow(
     outputSchema: ExtractRecipeFromYoutubeOutputSchema,
   },
   async (input): Promise<ExtractRecipeFromYoutubeOutput> => {
-    const {output} = await extractRecipeFromYoutubePrompt(input);
+    
+    const videoPart: MediaPart = {
+        media: {
+            url: input.youtubeUrl,
+            contentType: 'video/mp4',
+        }
+    }
+
+    const {output} = await extractRecipeFromYoutubePrompt({video: videoPart.media});
 
     if (!output?.recipeText) {
         throw new Error("Could not extract any recipe text from the YouTube video.");
