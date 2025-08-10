@@ -120,11 +120,23 @@ export default function RecipeInput() {
     if (videoRef.current && canvasRef.current) {
       const video = videoRef.current;
       const canvas = canvasRef.current;
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+      const videoWidth = video.videoWidth;
+      const videoHeight = video.videoHeight;
+  
+      if (videoWidth === 0 || videoHeight === 0) {
+        toast({
+          variant: 'destructive',
+          title: t('Error'),
+          description: 'Could not capture photo. Video stream not available.',
+        });
+        return;
+      }
+
+      canvas.width = videoWidth;
+      canvas.height = videoHeight;
       const context = canvas.getContext('2d');
       if (context) {
-        context.drawImage(video, 0, 0, video.videoWidth, video.videoHeight);
+        context.drawImage(video, 0, 0, videoWidth, videoHeight);
         const dataUrl = canvas.toDataURL('image/png');
         setImageSrc(dataUrl);
       }
