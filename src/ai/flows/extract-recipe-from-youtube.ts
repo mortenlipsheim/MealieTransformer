@@ -34,11 +34,15 @@ const extractRecipeFromYoutubePrompt = ai.definePrompt({
   input: {schema: ExtractRecipeFromYoutubeInputSchema},
   output: {schema: ExtractRecipeFromYoutubeOutputSchema},
   model: 'googleai/gemini-1.5-flash-latest',
-  prompt: `You are an expert recipe extractor. Your task is to analyze the cooking video found at the following URL: {{{youtubeUrl}}}
+  prompt: `You are an expert recipe extractor. Your task is to analyze the cooking video found at the following URL and extract the recipe from it.
 
-  Carefully analyze both the visual steps and the spoken narration to extract a complete, structured recipe.
+Video to analyze: {{{youtubeUrl}}}
 
-  From the video, please extract the full text of the recipe, including the list of ingredients with quantities and the step-by-step instructions.
+IMPORTANT: You must ONLY use the information present in this video. Do not add any information from outside the video. Do not hallucinate or invent any part of the recipe.
+
+Carefully analyze both the visual steps and the spoken narration to extract a complete, structured recipe.
+
+From the video, please extract the full text of the recipe, including the list of ingredients with quantities and the step-by-step instructions.
   `,
 });
 
