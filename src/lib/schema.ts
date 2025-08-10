@@ -18,7 +18,7 @@ export const recipeSchema = z.object({
   cookingTime: z.string().optional(),
   ingredients: z.array(z.object({ value: z.string() })).optional(),
   instructions: z.array(z.object({ value: z.string() })).optional(),
-  source: z.string().url().optional().or(z.literal('')),
+  source: z.string().optional(),
 });
 
 export type Recipe = z.infer<typeof recipeSchema>;
