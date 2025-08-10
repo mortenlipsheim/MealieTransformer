@@ -95,15 +95,22 @@ export async function sendToMealie({
     try {
         const mealieApiUrl = new URL('/api/recipes/create/html-or-json', mealieUrl).toString();
 
-        const payload = {
+        const schemaOrgRecipe = {
+            "@context": "https://schema.org/",
+            "@type": "Recipe",
             name: recipe.title,
             description: recipe.description,
             recipeYield: recipe.servings,
             prepTime: recipe.prepTime,
             totalTime: recipe.cookingTime,
-            recipeIngredient: recipe.ingredients?.map(i => ({ note: i.value, title: '' })),
-            recipeInstructions: recipe.instructions?.map(i => ({ text: i.value, title: '' })),
+            recipeIngredient: recipe.ingredients?.map(i => i.value),
+            recipeInstructions: recipe.instructions?.map(i => ({ "@type": "HowToStep", "text": i.value })),
             org_url: recipe.source,
+        };
+
+        const payload = {
+            data: JSON.stringify(schemaOrgRecipe),
+            includeTags: false,
         };
 
         const response = await fetch(mealieApiUrl, {
