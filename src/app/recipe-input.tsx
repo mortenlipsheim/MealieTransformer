@@ -20,7 +20,7 @@ import type { Recipe } from "@/lib/schema";
 import { useTranslation } from "@/hooks/use-translation";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import Image from "next/image";
-import { Camera, Upload } from "lucide-react";
+import { Camera, Upload, X } from "lucide-react";
 
 export default function RecipeInput() {
   const [source, setSource] = useState("");
@@ -35,7 +35,7 @@ export default function RecipeInput() {
   const [activeTab, setActiveTab] = useState("url");
 
   // Image states
-  const [imageSrc, setImageSrc] = useState<string | null>(null);
+  const [imageSources, setImageSources] = useState<string[]>([]);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -46,11 +46,6 @@ export default function RecipeInput() {
     const getCameraPermission = async () => {
       // Ensure this runs only on the client and only for the image tab
       if (typeof window === 'undefined' || !navigator.mediaDevices || activeTab !== 'image') {
-        return;
-      }
-
-      // If we already have a picture, don't re-request the camera
-      if (imageSrc) {
         return;
       }
 
@@ -81,16 +76,16 @@ export default function RecipeInput() {
         stream.getTracks().forEach(track => track.stop());
       }
     }
-  }, [t, toast, activeTab, imageSrc]);
+  }, [t, toast, activeTab]);
 
 
-  const onTransform = async (sourceText: string, isImage = false) => {
+  const onTransform = async () => {
     setLoading(true);
     const { data, error } = await handleRecipeTransform({
-        source: sourceText,
+        sourceImages: imageSources,
         targetLanguage,
         measurementSystem,
-        isImage,
+        isImage: true,
      });
 
     if (error) {
@@ -106,9 +101,27 @@ export default function RecipeInput() {
     setLoading(false);
   };
 
-  const handleUrlTransform = () => {
+  const handleUrlTransform = async () => {
     if (source) {
-      onTransform(source);
+      setLoading(true);
+      const { data, error } = await handleRecipeTransform({
+          source: source,
+          targetLanguage,
+          measurementSystem,
+      });
+
+      if (error) {
+        toast({
+          variant: "destructive",
+          title: t("Error"),
+          description: error,
+        });
+      } else if (data) {
+          setRecipe(data);
+          router.push("/review");
+      }
+      setLoading(false);
+
     } else {
       toast({
         variant: "destructive",
@@ -118,9 +131,26 @@ export default function RecipeInput() {
     }
   };
 
-  const handleTextTransform = () => {
+  const handleTextTransform = async () => {
     if (text) {
-      onTransform(text);
+       setLoading(true);
+       const { data, error } = await handleRecipeTransform({
+           source: text,
+           targetLanguage,
+           measurementSystem,
+       });
+
+       if (error) {
+         toast({
+           variant: "destructive",
+           title: t("Error"),
+           description: error,
+         });
+       } else if (data) {
+           setRecipe(data);
+           router.push("/review");
+       }
+       setLoading(false);
     } else {
       toast({
         variant: "destructive",
@@ -152,13 +182,7 @@ export default function RecipeInput() {
       if (context) {
         context.drawImage(video, 0, 0, videoWidth, videoHeight);
         const dataUrl = canvas.toDataURL('image/png');
-        setImageSrc(dataUrl);
-
-        // Stop the video stream after taking a photo
-        if (video.srcObject) {
-            const stream = video.srcObject as MediaStream;
-            stream.getTracks().forEach(track => track.stop());
-        }
+        setImageSources(prev => [...prev, dataUrl]);
       }
     }
   };
@@ -168,20 +192,16 @@ export default function RecipeInput() {
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
-        setImageSrc(e.target?.result as string);
-         // Stop the video stream if it's running
-        if (videoRef.current && videoRef.current.srcObject) {
-            const stream = videoRef.current.srcObject as MediaStream;
-            stream.getTracks().forEach(track => track.stop());
-        }
+        const dataUrl = e.target?.result as string;
+        setImageSources(prev => [...prev, dataUrl]);
       };
       reader.readAsDataURL(file);
     }
   };
 
   const handleImageTransform = () => {
-    if (imageSrc) {
-      onTransform(imageSrc, true);
+    if (imageSources.length > 0) {
+      onTransform();
     } else {
         toast({
             variant: "destructive",
@@ -191,10 +211,9 @@ export default function RecipeInput() {
     }
   };
 
-  const handleRetake = () => {
-    setImageSrc(null);
-    // The useEffect will handle re-requesting the camera
-  };
+  const removeImage = (index: number) => {
+    setImageSources(prev => prev.filter((_, i) => i !== index));
+  }
 
 
   return (
@@ -238,16 +257,13 @@ export default function RecipeInput() {
           <TabsContent value="image">
             <div className="mt-4 space-y-4">
                 <div className="relative aspect-video w-full bg-slate-200 rounded-md overflow-hidden">
-                    {imageSrc ? (
-                         <Image src={imageSrc} alt="Recipe" layout="fill" objectFit="contain" />
-                    ) : (
-                        <video
-                            ref={videoRef}
-                            className="w-full h-full object-cover"
-                            autoPlay
-                            muted
-                        />
-                    )}
+                    <video
+                        ref={videoRef}
+                        className="w-full h-full object-cover"
+                        autoPlay
+                        muted
+                        playsInline
+                    />
                     <canvas ref={canvasRef} className="hidden" />
                 </div>
 
@@ -261,15 +277,34 @@ export default function RecipeInput() {
                 )}
 
                  <div className="flex gap-2">
-                    {imageSrc ? (
-                         <Button onClick={handleRetake} variant="outline" className="w-full">{t("Retake Photo")}</Button>
-                    ): (
-                        <Button onClick={takePhoto} disabled={!hasCameraPermission} className="w-full"> <Camera className="mr-2"/> {t('Take Photo')}</Button>
-                    )}
+                    <Button onClick={takePhoto} disabled={!hasCameraPermission} className="w-full"> <Camera className="mr-2"/> {t('Take Photo')}</Button>
                     <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="w-full"><Upload className="mr-2"/>{t('Upload Image')}</Button>
                     <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} className="hidden" />
                  </div>
-                 <Button onClick={handleImageTransform} disabled={loading || !imageSrc} className="w-full">
+
+                {imageSources.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="font-medium">{t("Image Queue")} ({imageSources.length})</h4>
+                    <div className="flex gap-2 overflow-x-auto pb-2">
+                      {imageSources.map((src, index) => (
+                        <div key={index} className="relative shrink-0 w-32 h-24 rounded-md overflow-hidden">
+                           <Image src={src} alt={`Recipe page ${index + 1}`} layout="fill" objectFit="cover" />
+                           <Button
+                             variant="destructive"
+                             size="icon"
+                             className="absolute top-1 right-1 h-6 w-6 z-10"
+                             onClick={() => removeImage(index)}
+                           >
+                              <X className="h-4 w-4"/>
+                           </Button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+
+                 <Button onClick={handleImageTransform} disabled={loading || imageSources.length === 0} className="w-full">
                     {loading ? t('Transforming...') : t('Transform')}
                 </Button>
             </div>

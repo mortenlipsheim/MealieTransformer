@@ -22,27 +22,29 @@ async function fetchHtml(url: string): Promise<string> {
 
 export async function handleRecipeTransform({
   source,
+  sourceImages,
   targetLanguage,
   measurementSystem,
   isImage = false,
 }: {
-  source: string;
+  source?: string;
+  sourceImages?: string[];
   targetLanguage: string;
   measurementSystem: 'metric' | 'us';
   isImage?: boolean;
 }): Promise<ActionResult<Recipe>> {
-  if (!source) {
-    return { data: null, error: 'Source cannot be empty.' };
-  }
 
   try {
-    let content = source;
+    let content: string | undefined = source;
     let finalData: Recipe;
     let isUrl = false;
 
     if (isImage) {
-      // If it's an image, we first extract the text content.
-      const extractedTextData = await extractRecipeFromImage({ imageDataUri: source });
+        if (!sourceImages || sourceImages.length === 0) {
+            return { data: null, error: 'No images provided for transformation.' };
+        }
+      // If it's an image, we first extract the text content from all images.
+      const extractedTextData = await extractRecipeFromImage({ imageDataUris: sourceImages });
       // Then we pass that text to the universal transform flow.
       finalData = await transformRecipe({
         source: extractedTextData.recipeText,
@@ -51,6 +53,9 @@ export async function handleRecipeTransform({
       });
 
     } else {
+        if (!source) {
+            return { data: null, error: 'Source cannot be empty.' };
+        }
         isUrl = source.startsWith('http');
         if (isUrl) {
             content = await fetchHtml(source);
