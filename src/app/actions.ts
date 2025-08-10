@@ -100,6 +100,7 @@ export async function sendToMealie({
             "@type": "Recipe",
             name: recipe.title,
             description: recipe.description,
+            image: recipe.image,
             recipeYield: recipe.servings,
             prepTime: recipe.prepTime,
             totalTime: recipe.cookingTime,

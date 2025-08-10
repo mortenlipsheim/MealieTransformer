@@ -32,7 +32,7 @@ const transformRecipePrompt = ai.definePrompt({
   output: {schema: recipeSchema},
   model: 'googleai/gemini-1.5-flash-latest',
   prompt: `You are an expert recipe processor. Your task is to perform three actions on the provided recipe source in a single step:
-1.  **Extract Details**: Identify and extract the key details from the recipe source (title, description, ingredients, instructions, prep time, cook time, servings).
+1.  **Extract Details**: Identify and extract the key details from the recipe source (title, description, ingredients, instructions, prep time, cook time, servings, and the primary recipe image URL).
 2.  **Translate**: Translate all extracted text into natural-sounding {{{targetLanguage}}}.
 3.  **Convert Units**: Convert all measurements into the {{{measurementSystem}}} system.
 
