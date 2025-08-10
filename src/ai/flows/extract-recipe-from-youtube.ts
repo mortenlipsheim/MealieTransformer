@@ -33,7 +33,7 @@ const extractRecipeFromYoutubePrompt = ai.definePrompt({
   name: 'extractRecipeFromYoutubePrompt',
   input: {schema: ExtractRecipeFromYoutubeInputSchema},
   output: {schema: ExtractRecipeFromYoutubeOutputSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: 'googleai/gemini-1.5-pro-latest',
   system: `You are an expert recipe extractor. Your task is to watch the provided YouTube video and extract the full recipe, including ingredients and instructions.
 
 You must only use the information present in the video (audio, visuals, and description). Do not add any information that is not from the video.
