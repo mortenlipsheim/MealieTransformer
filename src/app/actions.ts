@@ -77,3 +77,58 @@ export async function handleRecipeTransform({
     };
   }
 }
+
+
+export async function sendToMealie({
+    recipe,
+    mealieUrl,
+    mealieApiToken
+}: {
+    recipe: Recipe;
+    mealieUrl: string;
+    mealieApiToken: string;
+}): Promise<ActionResult<{ success: boolean }>> {
+
+    if (!mealieUrl || !mealieApiToken) {
+        return { data: null, error: "Mealie URL and API Token are required." };
+    }
+
+    try {
+        const mealieApiUrl = new URL('/api/recipes', mealieUrl).toString();
+
+        const payload = {
+            name: recipe.title,
+            description: recipe.description,
+            recipe_yield: recipe.servings,
+            prep_time: recipe.prepTime,
+            cook_time: recipe.cookingTime,
+            recipe_ingredient: recipe.ingredients?.map(i => ({ note: i.value, title: '' })),
+            recipe_instructions: recipe.instructions?.map(i => ({ text: i.value, title: '' })),
+            org_url: recipe.source,
+        };
+
+        const response = await fetch(mealieApiUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${mealieApiToken}`,
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Mealie API Error:', errorData);
+            throw new Error(`Mealie API responded with status ${response.status}: ${errorData.detail || response.statusText}`);
+        }
+
+        return { data: { success: true }, error: null };
+
+    } catch (e: any) {
+        console.error("Error sending to Mealie:", e);
+        return {
+            data: null,
+            error: e.message || 'An unknown error occurred while sending to Mealie.',
+        };
+    }
+}

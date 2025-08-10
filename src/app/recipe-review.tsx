@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,11 +30,18 @@ import {
 } from "@/components/ui/form";
 import { recipeSchema, type Recipe } from "@/lib/schema";
 import { useTranslation } from "@/hooks/use-translation";
+import { sendToMealie } from "./actions";
+import { useToast } from "@/hooks/use-toast";
 
 export default function RecipeReview() {
   const [recipe, setRecipe] = useLocalStorage<Recipe | null>("recipe", null);
   const router = useRouter();
   const { t } = useTranslation();
+  const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
+
+  const [mealieUrl] = useLocalStorage("mealieUrl", "");
+  const [mealieApiToken] = useLocalStorage("mealieApiToken", "");
 
   const form = useForm<Recipe>({
     resolver: zodResolver(recipeSchema),
@@ -67,10 +74,31 @@ export default function RecipeReview() {
     }
   }, [recipe, router, form]);
 
-  const onSubmit = (data: Recipe) => {
+  const onSubmit = async (data: Recipe) => {
     setRecipe(data);
-    // TODO: Add further actions like posting to Mealie
-    console.log("Submitting to Mealie:", data);
+    setLoading(true);
+
+    const { error } = await sendToMealie({
+        recipe: data,
+        mealieUrl,
+        mealieApiToken,
+    });
+
+    if (error) {
+        toast({
+            variant: "destructive",
+            title: t("Error"),
+            description: error,
+        });
+    } else {
+        toast({
+            title: t("Success!"),
+            description: t("Recipe sent to Mealie successfully."),
+        });
+        setRecipe(null);
+        router.push("/");
+    }
+    setLoading(false);
   };
 
   if (!recipe) {
@@ -260,8 +288,8 @@ export default function RecipeReview() {
             
             <Separator />
             
-            <Button type="submit" size="lg" className="w-full bg-green-600 hover:bg-green-700">
-                {t('Send to Mealie')}
+            <Button type="submit" size="lg" className="w-full bg-green-600 hover:bg-green-700" disabled={loading}>
+                {loading ? t('Sending...') : t('Send to Mealie')}
             </Button>
           </form>
         </Form>
