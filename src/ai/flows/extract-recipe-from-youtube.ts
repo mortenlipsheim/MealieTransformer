@@ -38,11 +38,11 @@ const extractRecipeFromYoutubePrompt = ai.definePrompt({
 
 Video to analyze: {{{youtubeUrl}}}
 
-IMPORTANT: You must ONLY use the information present in this video. Do not add any information from outside the video. Do not hallucinate or invent any part of the recipe.
+IMPORTANT: You must ONLY use the information present in the video itself (visuals and audio) AND its description text. Do not add any information from outside these sources. Do not hallucinate or invent any part of the recipe.
 
-Carefully analyze both the visual steps and the spoken narration to extract a complete, structured recipe.
+Carefully analyze the visual steps, the spoken narration, and the video's description to extract a complete, structured recipe. The recipe might be in the description.
 
-From the video, please extract the full text of the recipe, including the list of ingredients with quantities and the step-by-step instructions.
+From the video and its description, please extract the full text of the recipe, including the list of ingredients with quantities and the step-by-step instructions.
   `,
 });
 
