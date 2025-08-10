@@ -39,6 +39,7 @@ export default function RecipeInput() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
 
   useEffect(() => {
@@ -211,7 +212,14 @@ export default function RecipeInput() {
                     {imageSrc ? (
                          <Image src={imageSrc} alt="Recipe" layout="fill" objectFit="contain" />
                     ) : (
-                        <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+                        <video 
+                            ref={videoRef} 
+                            className="w-full h-full object-cover" 
+                            autoPlay 
+                            muted 
+                            playsInline 
+                            onLoadedData={() => setIsVideoReady(true)}
+                        />
                     )}
                     <canvas ref={canvasRef} className="hidden" />
                 </div>
@@ -229,7 +237,7 @@ export default function RecipeInput() {
                     {imageSrc ? (
                          <Button onClick={() => setImageSrc(null)} variant="outline" className="w-full">{t("Retake Photo")}</Button>
                     ): (
-                        <Button onClick={takePhoto} disabled={!hasCameraPermission} className="w-full"> <Camera className="mr-2"/> {t('Take Photo')}</Button>
+                        <Button onClick={takePhoto} disabled={!hasCameraPermission || !isVideoReady} className="w-full"> <Camera className="mr-2"/> {t('Take Photo')}</Button>
                     )}
                     <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="w-full"><Upload className="mr-2"/>{t('Upload Image')}</Button>
                     <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} className="hidden" />
