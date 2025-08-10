@@ -218,7 +218,6 @@ export default function RecipeInput() {
                             className="w-full h-full object-cover" 
                             autoPlay 
                             muted 
-                            playsInline 
                         />
                     )}
                     <canvas ref={canvasRef} className="hidden" />
