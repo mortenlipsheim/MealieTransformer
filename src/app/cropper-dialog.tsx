@@ -38,20 +38,21 @@ export default function CropperDialog({
 
   return (
     <Dialog open={!!image} onOpenChange={(isOpen) => !isOpen && onCancel()}>
-      <DialogContent className="max-w-4xl h-5/6 flex flex-col">
+      <DialogContent className="max-w-3xl h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>{t('Crop Image')}</DialogTitle>
         </DialogHeader>
-        <div className="flex-grow relative">
-          {image && (
-            <Cropper
-              ref={cropperRef}
-              src={image}
-              className={"cropper"}
-            />
-          )}
+        <div className="flex-grow relative min-h-0">
+          <div className="absolute inset-0">
+            {image && (
+                <Cropper
+                ref={cropperRef}
+                src={image}
+                />
+            )}
+          </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="pt-4">
           <Button variant="outline" onClick={onCancel}>
             {t('Cancel')}
           </Button>
