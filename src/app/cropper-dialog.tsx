@@ -48,7 +48,6 @@ export default function CropperDialog({
               ref={cropperRef}
               src={image}
               className={"cropper"}
-              aspectRatio={9 / 16}
             />
           )}
         </div>
