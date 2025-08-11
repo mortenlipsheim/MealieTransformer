@@ -73,6 +73,9 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     "Camera Access Denied": "Camera Access Denied",
     "Please enable camera permissions in your browser settings to use this feature.": "Please enable camera permissions in your browser settings to use this feature.",
     "Image Queue": "Image Queue",
+    "Crop Image": "Crop Image",
+    "Cancel": "Cancel",
+    "Confirm Crop": "Confirm Crop",
   },
   es: {
     "Mealie Transformer": "Transformador Mealie",
@@ -133,6 +136,9 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     "Camera Access Denied": "Acceso a la Cámara Denegado",
     "Please enable camera permissions in your browser settings to use this feature.": "Por favor, habilita los permisos de la cámara en la configuración de tu navegador para usar esta aplicación.",
     "Image Queue": "Cola de Imágenes",
+    "Crop Image": "Recortar Imagen",
+    "Cancel": "Cancelar",
+    "Confirm Crop": "Confirmar Recorte",
   },
   fr: {
     "Mealie Transformer": "Transformateur Mealie",
@@ -193,5 +199,8 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     "Camera Access Denied": "Accès à la caméra refusé",
     "Please enable camera permissions in your browser settings to use this feature.": "Veuillez activer les autorisations de caméra dans les paramètres de votre navigateur pour utiliser cette fonctionnalité.",
     "Image Queue": "File d'attente d'images",
+    "Crop Image": "Rogner l'image",
+    "Cancel": "Annuler",
+    "Confirm Crop": "Confirmer le rognage",
   },
 };
