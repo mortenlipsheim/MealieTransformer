@@ -21,7 +21,6 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     URL: "URL",
     Text: "Text",
     Image: "Image",
-    YouTube: "YouTube",
     "Transform": "Transform",
     "Transforming...": "Transforming...",
     "Please enter a URL.": "Please enter a URL.",
@@ -73,6 +72,7 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     "Recipe sent to Mealie successfully.": "Recipe sent to Mealie successfully.",
     "Camera Access Denied": "Camera Access Denied",
     "Please enable camera permissions in your browser settings to use this feature.": "Please enable camera permissions in your browser settings to use this feature.",
+    "Image Queue": "Image Queue",
   },
   es: {
     "Mealie Transformer": "Transformador Mealie",
@@ -81,7 +81,6 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     URL: "URL",
     Text: "Texto",
     Image: "Imagen",
-    YouTube: "YouTube",
     "Transform": "Transformar",
     "Transforming...": "Transformando...",
     "Please enter a URL.": "Por favor, introduce una URL.",
@@ -133,6 +132,7 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     "Recipe sent to Mealie successfully.": "Receta enviada a Mealie con éxito.",
     "Camera Access Denied": "Acceso a la Cámara Denegado",
     "Please enable camera permissions in your browser settings to use this feature.": "Por favor, habilita los permisos de la cámara en la configuración de tu navegador para usar esta aplicación.",
+    "Image Queue": "Cola de Imágenes",
   },
   fr: {
     "Mealie Transformer": "Transformateur Mealie",
@@ -141,7 +141,6 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     URL: "URL",
     Text: "Texte",
     Image: "Image",
-    YouTube: "YouTube",
     "Transform": "Transformer",
     "Transforming...": "Transformation...",
     "Please enter a URL.": "Veuillez entrer une URL.",
@@ -193,5 +192,6 @@ export const translations: { [key: string]: { [key: string]: string } } = {
     "Recipe sent to Mealie successfully.": "Recette envoyée à Mealie avec succès.",
     "Camera Access Denied": "Accès à la caméra refusé",
     "Please enable camera permissions in your browser settings to use this feature.": "Veuillez activer les autorisations de caméra dans les paramètres de votre navigateur pour utiliser cette fonctionnalité.",
+    "Image Queue": "File d'attente d'images",
   },
 };
