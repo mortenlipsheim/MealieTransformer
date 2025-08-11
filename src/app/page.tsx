@@ -23,7 +23,7 @@ export default function Home() {
        </div>
 
       <div className="text-center mt-8">
-        <p className="text-muted-foreground">
+        <p className="text-muted-foreground text-lg">
           {t('Transform and translate recipes from any source for your Mealie instance.')}
         </p>
       </div>

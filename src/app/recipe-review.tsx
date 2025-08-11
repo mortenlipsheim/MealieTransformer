@@ -168,10 +168,19 @@ export default function RecipeReview() {
                   </FormItem>
                 )}
               />
-               <FormItem>
-                <FormLabel>{t('Total Time')}</FormLabel>
-                <Input disabled value={`${recipe.prepTime} + ${recipe.cookingTime}`} />
-               </FormItem>
+              <FormField
+                control={form.control}
+                name="totalTime"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t('Total Time')}</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

@@ -21,6 +21,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import Image from "next/image";
 import { Camera, Upload, X } from "lucide-react";
+import CropperDialog from "./cropper-dialog";
 
 export default function RecipeInput() {
   const [url, setUrl] = useState("");
@@ -35,6 +36,7 @@ export default function RecipeInput() {
   const [activeTab, setActiveTab] = useState("url");
 
   // Image states
+  const [imageToCrop, setImageToCrop] = useState<string | null>(null);
   const [imageSources, setImageSources] = useState<string[]>([]);
   const [hasCameraPermission, setHasCameraPermission] = useState<boolean | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -141,7 +143,7 @@ export default function RecipeInput() {
       if (context) {
         context.drawImage(video, 0, 0, videoWidth, videoHeight);
         const dataUrl = canvas.toDataURL('image/png');
-        setImageSources(prev => [...prev, dataUrl]);
+        setImageToCrop(dataUrl);
       }
     }
   };
@@ -152,10 +154,17 @@ export default function RecipeInput() {
       const reader = new FileReader();
       reader.onload = (e) => {
         const dataUrl = e.target?.result as string;
-        setImageSources(prev => [...prev, dataUrl]);
+        setImageToCrop(dataUrl);
       };
       reader.readAsDataURL(file);
+       // Reset file input to allow uploading the same file again
+       event.target.value = '';
     }
+  };
+
+  const handleCroppedImage = (croppedImage: string) => {
+    setImageSources(prev => [...prev, croppedImage]);
+    setImageToCrop(null);
   };
 
   const handleImageTransform = () => {
@@ -176,6 +185,12 @@ export default function RecipeInput() {
 
 
   return (
+    <>
+    <CropperDialog
+        image={imageToCrop}
+        onConfirm={handleCroppedImage}
+        onCancel={() => setImageToCrop(null)}
+      />
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader>
         <CardTitle className="font-headline text-3xl">{t('Recipe Input')}</CardTitle>
@@ -270,5 +285,6 @@ export default function RecipeInput() {
         </Tabs>
       </CardContent>
     </Card>
+    </>
   );
 }
