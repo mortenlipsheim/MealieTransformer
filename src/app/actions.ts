@@ -31,43 +31,41 @@ export async function handleRecipeTransform({
   sourceImages?: string[];
   targetLanguage: string;
   measurementSystem: 'metric' | 'us';
-  sourceType: 'url' | 'text' | 'image' | 'youtube';
+  sourceType: 'url' | 'text' | 'image';
 }): Promise<ActionResult<Recipe>> {
 
   try {
-    let content: string | undefined = source;
-    let finalData: Recipe;
+    let recipeText: string | undefined;
 
     if (sourceType === 'image') {
         if (!sourceImages || sourceImages.length === 0) {
             return { data: null, error: 'No images provided for transformation.' };
         }
       const extractedTextData = await extractRecipeFromImage({ imageDataUris: sourceImages });
-      content = extractedTextData.recipeText;
+      recipeText = extractedTextData.recipeText;
 
     } else if (sourceType === 'url') {
         if (!source) {
             return { data: null, error: 'URL cannot be empty.' };
         }
-        content = await fetchHtml(source);
+        recipeText = await fetchHtml(source);
+    } else {
+        recipeText = source;
     }
 
-    if (!content && sourceType !== 'youtube') {
+    if (!recipeText) {
         return { data: null, error: 'Could not resolve recipe content from the source.' };
     }
 
-    // For YouTube, the source URL itself is the content.
-    const sourceForTransform = sourceType === 'youtube' ? source! : content!;
-
-    finalData = await transformRecipe({
-        source: sourceForTransform,
+    const finalData = await transformRecipe({
+        recipeText: recipeText,
         targetLanguage,
         measurementSystem,
     });
 
     const recipeData: Recipe = {
       ...finalData,
-      source: (sourceType === 'url' || sourceType === 'youtube') ? source : '',
+      source: (sourceType === 'url') ? source : '',
     };
 
     return { data: recipeData, error: null };

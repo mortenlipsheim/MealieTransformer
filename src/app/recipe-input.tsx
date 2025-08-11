@@ -25,7 +25,6 @@ import { Camera, Upload, X } from "lucide-react";
 export default function RecipeInput() {
   const [url, setUrl] = useState("");
   const [text, setText] = useState("");
-  const [youtubeUrl, setYoutubeUrl] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
@@ -81,7 +80,7 @@ export default function RecipeInput() {
   }, [activeTab, startVideoStream]);
 
 
-  const onTransform = async (sourceType: 'url' | 'text' | 'image' | 'youtube', source?: string, sourceImages?: string[]) => {
+  const onTransform = async (sourceType: 'url' | 'text' | 'image', source?: string, sourceImages?: string[]) => {
     setLoading(true);
     const { data, error } = await handleRecipeTransform({
         source,
@@ -117,14 +116,6 @@ export default function RecipeInput() {
        onTransform('text', text);
     } else {
       toast({ variant: "destructive", title: t("Error"), description: t("Please enter recipe text.") });
-    }
-  };
-
-  const handleYoutubeTransform = () => {
-    if (youtubeUrl) {
-      onTransform('youtube', youtubeUrl);
-    } else {
-      toast({ variant: "destructive", title: t("Error"), description: "Please enter a YouTube URL." });
     }
   };
 
@@ -191,11 +182,10 @@ export default function RecipeInput() {
       </CardHeader>
       <CardContent>
         <Tabs defaultValue="url" onValueChange={setActiveTab} value={activeTab}>
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="url">{t('URL')}</TabsTrigger>
             <TabsTrigger value="text">{t('Text')}</TabsTrigger>
             <TabsTrigger value="image">{t('Image')}</TabsTrigger>
-            <TabsTrigger value="youtube">{t('YouTube')}</TabsTrigger>
           </TabsList>
           <TabsContent value="url">
             <div className="mt-4 space-y-4">
@@ -275,18 +265,6 @@ export default function RecipeInput() {
                  <Button onClick={handleImageTransform} disabled={loading || imageSources.length === 0} className="w-full">
                     {loading ? t('Transforming...') : t('Transform')}
                 </Button>
-            </div>
-          </TabsContent>
-          <TabsContent value="youtube">
-             <div className="mt-4 space-y-4">
-              <Input
-                placeholder="https://www.youtube.com/watch?v=..."
-                value={youtubeUrl}
-                onChange={(e) => setYoutubeUrl(e.target.value)}
-              />
-               <Button onClick={handleYoutubeTransform} disabled={loading} className="w-full">
-                {loading ? t('Transforming...') : t('Transform')}
-              </Button>
             </div>
           </TabsContent>
         </Tabs>
