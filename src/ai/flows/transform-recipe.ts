@@ -32,8 +32,9 @@ const transformRecipePrompt = ai.definePrompt({
   output: {schema: recipeSchema},
   model: 'googleai/gemini-1.5-flash-latest',
   prompt: `You are an expert Chef that can create a recipe from watching a cooking video or reading recipe text.
+
 Your task is to process the provided recipe source and perform three actions in a single step:
-1.  **Extract Details**: If the source is a YouTube URL, watch the video. If it's text/HTML, read it. Identify and extract the key details (title, description, ingredients, instructions, prep time, cook time, servings, and the primary recipe image URL if available).
+1.  **Extract Details**: If the source is a YouTube URL, watch the video. If it's text/HTML, read it. Identify and extract the key details (title, description, ingredients, instructions, prep time, cook time, servings, and the primary recipe image URL if available). You must only use the information present in the source. Do not add any information that is not from the source.
 2.  **Translate**: Translate all extracted text into natural-sounding {{{targetLanguage}}}.
 3.  **Convert Units**: Convert all measurements into the {{{measurementSystem}}} system.
 
@@ -52,6 +53,9 @@ const transformRecipeFlow = ai.defineFlow(
   },
   async input => {
     const {output} = await transformRecipePrompt(input);
-    return output!;
+    if (!output) {
+      throw new Error('The AI model could not generate a recipe. The source may not contain a valid recipe or may be inaccessible.');
+    }
+    return output;
   }
 );
