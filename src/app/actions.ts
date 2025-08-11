@@ -2,7 +2,6 @@
 'use server';
 
 import { extractRecipeFromImage } from '@/ai/flows/extract-recipe-from-image';
-import { extractRecipeFromYoutube } from '@/ai/flows/extract-recipe-from-youtube';
 import { transformRecipe } from '@/ai/flows/transform-recipe';
 import type { Recipe } from '@/lib/schema';
 
@@ -46,13 +45,6 @@ export async function handleRecipeTransform({
       const extractedTextData = await extractRecipeFromImage({ imageDataUris: sourceImages });
       content = extractedTextData.recipeText;
 
-    } else if (sourceType === 'youtube') {
-        if (!source) {
-            return { data: null, error: 'YouTube URL cannot be empty.' };
-        }
-        const extractedTextData = await extractRecipeFromYoutube({ youtubeUrl: source });
-        content = extractedTextData.recipeText;
-
     } else if (sourceType === 'url') {
         if (!source) {
             return { data: null, error: 'URL cannot be empty.' };
@@ -60,12 +52,15 @@ export async function handleRecipeTransform({
         content = await fetchHtml(source);
     }
 
-    if (!content) {
+    if (!content && sourceType !== 'youtube') {
         return { data: null, error: 'Could not resolve recipe content from the source.' };
     }
 
+    // For YouTube, the source URL itself is the content.
+    const sourceForTransform = sourceType === 'youtube' ? source! : content!;
+
     finalData = await transformRecipe({
-        source: content,
+        source: sourceForTransform,
         targetLanguage,
         measurementSystem,
     });
