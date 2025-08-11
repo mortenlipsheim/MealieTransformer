@@ -30,7 +30,7 @@ export async function handleRecipeTransform({
   source?: string;
   sourceImages?: string[];
   targetLanguage: string;
-  measurementSystem: 'metric' | 'us';
+  measurementSystem: 'metric' | 'us' | 'imperial';
   sourceType: 'url' | 'text' | 'image';
 }): Promise<ActionResult<Recipe>> {
 

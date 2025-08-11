@@ -16,7 +16,7 @@ import { recipeSchema, type Recipe } from '@/lib/schema';
 const TransformRecipeInputSchema = z.object({
   recipeText: z.string().describe('The plain text of the recipe to transform.'),
   targetLanguage: z.string().describe('The target language for the recipe (e.g., "French", "Spanish").'),
-  measurementSystem: z.enum(['metric', 'us']).describe('The target measurement system (metric or US).'),
+  measurementSystem: z.enum(['metric', 'us', 'imperial']).describe('The target measurement system (metric, US, or Imperial).'),
 });
 export type TransformRecipeInput = z.infer<typeof TransformRecipeInputSchema>;
 

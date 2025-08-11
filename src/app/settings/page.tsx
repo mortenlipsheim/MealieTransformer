@@ -93,6 +93,7 @@ export default function SettingsPage() {
               <SelectContent>
                 <SelectItem value="metric">{t('Metric')}</SelectItem>
                 <SelectItem value="us">{t('US')}</SelectItem>
+                <SelectItem value="imperial">{t('Imperial')}</SelectItem>
               </SelectContent>
             </Select>
           </div>

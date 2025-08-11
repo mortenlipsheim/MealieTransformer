@@ -32,7 +32,7 @@ export default function RecipeInput() {
   const [, setRecipe] = useLocalStorage<Recipe | null>("recipe", null);
   const { t } = useTranslation();
   const [targetLanguage] = useLocalStorage("targetLanguage", "en");
-  const [measurementSystem] = useLocalStorage("measurementSystem", "metric");
+  const [measurementSystem] = useLocalStorage<"metric" | "us" | "imperial">("measurementSystem", "metric");
   const [activeTab, setActiveTab] = useState("url");
 
   // Image states
