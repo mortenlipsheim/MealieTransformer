@@ -4,6 +4,7 @@
 import { extractRecipeFromImage } from '@/ai/flows/extract-recipe-from-image';
 import { transformRecipe } from '@/ai/flows/transform-recipe';
 import type { Recipe } from '@/lib/schema';
+import { targetLanguages } from '@/lib/translations';
 
 type ActionResult<T> = { data: T; error: null } | { data: null; error: string };
 
@@ -57,9 +58,11 @@ export async function handleRecipeTransform({
         return { data: null, error: 'Could not resolve recipe content from the source.' };
     }
 
+    const languageName = targetLanguages[targetLanguage] || targetLanguage;
+
     const finalData = await transformRecipe({
         recipeText: recipeText,
-        targetLanguage,
+        targetLanguage: languageName,
         measurementSystem,
     });
 
