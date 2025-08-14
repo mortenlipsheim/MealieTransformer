@@ -255,7 +255,7 @@ export default function RecipeInput() {
                     </Alert>
                 )}
 
-                 <div className="flex gap-2">
+                 <div className="flex flex-col sm:flex-row gap-2">
                     <Button onClick={takePhoto} disabled={!hasCameraPermission || loading} className="w-full"> <Camera className="mr-2"/> {t('Take Photo')}</Button>
                     <Button onClick={() => fileInputRef.current?.click()} variant="outline" className="w-full" disabled={loading}><Upload className="mr-2"/>{t('Upload Image')}</Button>
                     <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageUpload} className="hidden" />
@@ -294,5 +294,3 @@ export default function RecipeInput() {
     </>
   );
 }
-
-    

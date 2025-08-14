@@ -38,7 +38,7 @@ export default function CropperDialog({
 
   return (
     <Dialog open={!!image} onOpenChange={(isOpen) => !isOpen && onCancel()}>
-      <DialogContent className="max-w-3xl h-[90vh] flex flex-col">
+      <DialogContent className="max-w-3xl h-[90vh] flex flex-col p-4 sm:p-6">
         <DialogHeader>
           <DialogTitle>{t('Crop Image')}</DialogTitle>
         </DialogHeader>
