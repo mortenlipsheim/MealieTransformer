@@ -105,7 +105,7 @@ export default function RecipeReview() {
 
   return (
     <Card className="w-full max-w-4xl mx-auto">
-      <CardHeader className="flex flex-row items-center justify-between">
+      <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between gap-2">
         <CardTitle className="font-headline text-3xl">{t('Recipe Review')}</CardTitle>
         <Link href="/">
           <Button variant="ghost">{t('Start Over')}</Button>
