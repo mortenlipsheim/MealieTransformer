@@ -13,10 +13,12 @@ GEMINI_API_KEY=Gemini-API-Key
 
 
 ### Install node
+```
 curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
 apt install -y nodejs
 node -v
 npm -v
+```
 
 ### On the Linux server
 ```
@@ -31,16 +33,22 @@ npm run start # (running interactive) (add -- -p 9002 to specify port)
 
 ##### In background
 (Only once per server)
+```
 sudo npm install pm2 -g
+```
 
 (go into the project directory)
+```
 pm2 start npm --name "MealieTransformer" -- start
+```
 
 ##### After a change:
+```
 cd /MealieTransformer
 git pull origin main
 npm install
 npm run build
+```
 
 If using pm2: pm2 restart MealieTransformer (or pm2 restart all)
 
