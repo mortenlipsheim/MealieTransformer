@@ -31,8 +31,9 @@ export default function RecipeInput() {
   const { toast } = useToast();
   const [, setRecipe] = useLocalStorage<Recipe | null>("recipe", null);
   const { t } = useTranslation();
-  const [targetLanguage] = useLocalStorage("targetLanguage", "en");
-  const [measurementSystem] = useLocalStorage<"metric" | "us" | "imperial">("measurementSystem", "metric");
+  // We still use useLocalStorage to set a default value if one doesn't exist
+  useLocalStorage("targetLanguage", "en");
+  useLocalStorage<"metric" | "us" | "imperial">("measurementSystem", "metric");
   const [activeTab, setActiveTab] = useState("url");
 
   // Image states
@@ -84,6 +85,11 @@ export default function RecipeInput() {
 
   const onTransform = async (sourceType: 'url' | 'text' | 'image', source?: string, sourceImages?: string[]) => {
     setLoading(true);
+
+    // Read directly from localStorage to ensure we have the latest values
+    const targetLanguage = JSON.parse(localStorage.getItem("targetLanguage") || '"en"');
+    const measurementSystem = JSON.parse(localStorage.getItem("measurementSystem") || '"metric"');
+
     const { data, error } = await handleRecipeTransform({
         source,
         sourceImages,
@@ -288,3 +294,5 @@ export default function RecipeInput() {
     </>
   );
 }
+
+    
