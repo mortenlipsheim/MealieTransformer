@@ -74,9 +74,22 @@ export async function handleRecipeTransform({
     return { data: recipeData, error: null };
   } catch (e: any) {
     console.error(e);
+    let errorMessage = e.message || 'An unknown error occurred during transformation.';
+    const errorString = errorMessage.toLowerCase();
+
+    if (
+        errorString.includes('quota') ||
+        errorString.includes('rate limit') ||
+        errorString.includes('billing') ||
+        errorString.includes('429')
+      ) {
+        errorMessage = 'The request could not be completed because the API quota has been exceeded. Please check your Google AI account for billing and usage limits.';
+    }
+
+
     return {
       data: null,
-      error: e.message || 'An unknown error occurred during transformation.',
+      error: errorMessage,
     };
   }
 }
