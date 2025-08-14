@@ -61,7 +61,7 @@ export default function SettingsPage() {
               </SelectTrigger>
               <SelectContent>
                 {Object.entries(uiLanguages).map(([code, name]) => (
-                  <SelectItem key={code} value={code}>{name}</SelectItem>
+                  <SelectItem key={code} value={code}>{t(name)}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
