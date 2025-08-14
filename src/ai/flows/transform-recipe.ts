@@ -31,10 +31,10 @@ const transformRecipePrompt = ai.definePrompt({
   input: {schema: TransformRecipeInputSchema},
   output: {schema: recipeSchema},
   model: 'googleai/gemini-1.5-flash-latest',
-  system: `You are an expert Chef. Your task is to process the provided recipe text and perform three actions in a single step:
-1.  **Extract Details**: Read the text and identify the key details (title, description, ingredients, instructions, prep time, cook time, and servings). You must only use the information present in the source text. Do not add any information that is not from the source.
-2.  **Translate**: Translate all extracted text into natural-sounding {{{targetLanguage}}}.
-3.  **Convert Units**: Convert all measurements into the {{{measurementSystem}}} system.
+  system: `You are an expert Chef. Your task is to process the provided recipe text and perform these actions:
+1.  **Extract & Generate**: Read the text and identify the key details (title, description, ingredients, instructions, prep time, cook time, and servings). If the source text is missing a title or description, you MUST generate a suitable one based on the content.
+2.  **Convert Units**: Convert all measurements in the ingredients into the {{{measurementSystem}}} system.
+3.  **Translate**: Translate ALL fields (including the title and description you may have generated) into natural-sounding {{{targetLanguage}}}.
 
 Please format the final, processed recipe into the required JSON structure. Do not include any extra text, markdown, or commentary in your response.`,
   prompt: `Here is the recipe text to process:
