@@ -19,6 +19,7 @@ node -v
 npm -v
 
 ### On the Linux server
+```
 cd /BaseDirectory/name (e.g. firebase)
 git clone https://github.com/mortenlipsheim/MealieTransformer
 cd MealieTransformer
@@ -26,6 +27,7 @@ npm install
 nano .env.local #(add necessary variables)
 npm run build
 npm run start # (running interactive) (add -- -p 9002 to specify port)
+```
 
 ##### In background
 (Only once per server)
