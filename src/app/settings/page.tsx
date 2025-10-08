@@ -36,11 +36,14 @@ export default function SettingsPage() {
 
   const [models, setModels] = useState<ModelReference[]>([]);
   const [loadingModels, setLoadingModels] = useState(true);
+  const [isMounted, setIsMounted] = useState(false);
 
   const { t } = useTranslation();
   const { toast } = useToast();
 
   useEffect(() => {
+    setIsMounted(true);
+    
     async function fetchModels() {
       setLoadingModels(true);
       try {
@@ -104,9 +107,9 @@ export default function SettingsPage() {
         <CardContent className="grid gap-6">
           <div className="grid gap-2">
             <Label htmlFor="text-model">{t('Text Generation Model')}</Label>
-            <Select value={textModel} onValueChange={setTextModel} disabled={loadingModels}>
+            <Select value={textModel} onValueChange={setTextModel} disabled={!isMounted || loadingModels}>
                 <SelectTrigger id="text-model">
-                    <SelectValue placeholder={loadingModels ? t("Loading models...") : t("Select a model")} />
+                    <SelectValue placeholder={!isMounted || loadingModels ? t("Loading models...") : t("Select a model")} />
                 </SelectTrigger>
                 <SelectContent>
                     {models.map((model) => (
@@ -119,9 +122,9 @@ export default function SettingsPage() {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="vision-model">{t('Vision/Image Model')}</Label>
-             <Select value={visionModel} onValueChange={setVisionModel} disabled={loadingModels}>
+             <Select value={visionModel} onValueChange={setVisionModel} disabled={!isMounted || loadingModels}>
                 <SelectTrigger id="vision-model">
-                    <SelectValue placeholder={loadingModels ? t("Loading models...") : t("Select a model")} />
+                    <SelectValue placeholder={!isMounted || loadingModels ? t("Loading models...") : t("Select a model")} />
                 </SelectTrigger>
                 <SelectContent>
                     {models.map((model) => (
