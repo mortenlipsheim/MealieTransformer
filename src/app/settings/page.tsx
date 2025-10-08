@@ -139,7 +139,7 @@ export default function SettingsPage() {
             <Select value={targetLanguage} onValueChange={setTargetLanguage}>
               <SelectTrigger id="target-language">
                 <SelectValue placeholder="Select language" />
-              </Trigger>
+              </SelectTrigger>
               <SelectContent>
                 {Object.entries(targetLanguages).map(([code, name]) => (
                   <SelectItem key={code} value={code}>{t(name)}</SelectItem>
