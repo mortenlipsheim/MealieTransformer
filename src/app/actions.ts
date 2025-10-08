@@ -14,7 +14,7 @@ type ActionResult<T> = { data: T; error: null } | { data: null; error: string };
 
 export async function getAvailableModels(): Promise<{ data: ModelReference[] | null; error: string | null; }> {
   try {
-    const allModels: ModelReference[] = await googleAI().listModels();
+    const allModels: ModelReference[] = await googleAI.listModels();
 
     if (!allModels || allModels.length === 0) {
       return { data: null, error: 'No models were returned from the listModels API.' };
