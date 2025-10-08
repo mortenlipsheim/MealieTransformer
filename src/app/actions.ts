@@ -1,12 +1,6 @@
 
 'use server';
 
-// Load environment variables and initialize Genkit
-import { config } from 'dotenv';
-config();
-import '@/ai/genkit';
-
-
 import { extractRecipeFromImage } from '@/ai/flows/extract-recipe-from-image';
 import { transformRecipe } from '@/ai/flows/transform-recipe';
 import type { Recipe } from '@/lib/schema';
@@ -18,8 +12,6 @@ type ActionResult<T> = { data: T; error: null } | { data: null; error: string };
 export async function getAvailableModels(): Promise<ActionResult<ModelReference[]>> {
     try {
         const models = await listModels();
-        // Return all models without filtering to ensure the list is populated.
-        // The user can then select the appropriate model from the dropdown.
         return { data: models, error: null };
     } catch (e: any) {
         console.error("Error fetching models:", e);
