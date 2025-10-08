@@ -1,3 +1,4 @@
+"use client";
 
 import { useTranslation } from "@/hooks/use-translation";
 import { ChefHat } from "lucide-react";
