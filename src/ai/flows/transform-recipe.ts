@@ -11,7 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
 import { recipeSchema, type Recipe } from '@/lib/schema';
-import { googleAI } from '@genkit-ai/googleai';
+import { googleAI } from '@genkit-ai/google-genai';
 
 
 const TransformRecipeInputSchema = z.object({
