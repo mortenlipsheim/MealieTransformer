@@ -53,12 +53,15 @@ export default function SettingsPage() {
         });
       } else if (data) {
         setModels(data);
-        // Set default model if not already set
-        if (!textModel && data.length > 0) {
+        // Set default model if not already set by reading from localStorage
+        const currentTextModel = JSON.parse(localStorage.getItem("textModel") || '""');
+        const currentVisionModel = JSON.parse(localStorage.getItem("visionModel") || '""');
+
+        if (!currentTextModel && data.length > 0) {
             const defaultTextModel = data.find(m => m.name.includes('flash'));
             if (defaultTextModel) setTextModel(defaultTextModel.name);
         }
-        if (!visionModel && data.length > 0) {
+        if (!currentVisionModel && data.length > 0) {
             const defaultVisionModel = data.find(m => m.name.includes('flash'));
             if (defaultVisionModel) setVisionModel(defaultVisionModel.name);
         }
@@ -66,7 +69,8 @@ export default function SettingsPage() {
       setLoadingModels(false);
     };
     fetchModels();
-  }, [setTextModel, setVisionModel, textModel, visionModel, t, toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex flex-col gap-8 w-full max-w-2xl">
