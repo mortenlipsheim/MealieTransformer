@@ -24,7 +24,7 @@ import { ArrowLeft, Loader2 } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
 import Logo from "@/components/logo";
-import { getAvailableModels } from "../actions";
+import getAvailableModels from "../models-action";
 import { useToast } from "@/hooks/use-toast";
 import type { ModelReference } from "genkit";
 
