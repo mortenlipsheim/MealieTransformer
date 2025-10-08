@@ -12,10 +12,9 @@ type ActionResult<T> = { data: T; error: null } | { data: null; error: string };
 export async function getAvailableModels(): Promise<ActionResult<ModelReference[]>> {
     try {
         const models = await listModels();
-        const availableModels = models.filter(
-            (m) => m.info?.supportedGenerationMethods.includes('generate')
-        );
-        return { data: availableModels, error: null };
+        // Return all models without filtering to ensure the list is populated.
+        // The user can then select the appropriate model from the dropdown.
+        return { data: models, error: null };
     } catch (e: any) {
         console.error("Error fetching models:", e);
         return {
