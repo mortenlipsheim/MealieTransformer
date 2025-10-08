@@ -20,16 +20,15 @@ export const findModel = ai.defineFlow(
     if (cachedModel) {
       return cachedModel;
     }
-    for await (const { models } of listModels()) {
-      const model = models.find(
-        (m) =>
-          m.info?.supportedGenerationMethods.includes('generate') &&
-          m.info.label?.toLocaleLowerCase().includes('flash')
-      );
-      if (model) {
-        cachedModel = model.name;
-        return model.name;
-      }
+    const allModels = await listModels();
+    for (const model of allModels) {
+        if (
+            model.info?.supportedGenerationMethods.includes('generate') &&
+            model.info.label?.toLocaleLowerCase().includes('flash')
+        ) {
+            cachedModel = model.name;
+            return model.name;
+        }
     }
     throw new Error('No suitable model found.');
   }
