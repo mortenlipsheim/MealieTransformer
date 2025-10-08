@@ -1,7 +1,7 @@
 
 import 'dotenv/config';
-import '@/ai/genkit';
-import { listModels, type ModelReference } from 'genkit';
+import { ai } from '@/ai/genkit';
+import type { ModelReference } from 'genkit/ai';
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -11,7 +11,7 @@ import SettingsForm from "./settings-form";
 
 async function getAvailableModels(): Promise<{ data: ModelReference[] | null; error: string | null; }> {
   try {
-    const allModels: ModelReference[] = await listModels();
+    const allModels: ModelReference[] = await ai.listModels();
 
     if (!allModels || allModels.length === 0) {
       return { data: null, error: 'No models were returned from the listModels API.' };
@@ -29,7 +29,11 @@ async function getAvailableModels(): Promise<{ data: ModelReference[] | null; er
     return { data: generativeModels, error: null };
   } catch (e: any) {
     console.error("Error fetching models:", e);
-    return { data: null, error: e.message || 'An unknown error occurred while fetching models.' };
+    const errorMessage = e.message || 'An unknown error occurred while fetching models.';
+    if (errorMessage.toLowerCase().includes('api key not valid')) {
+        return { data: null, error: 'The provided Google AI API Key is not valid. Please check your .env file.' };
+    }
+    return { data: null, error: errorMessage };
   }
 }
 
