@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,23 +24,64 @@ import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
 import Logo from "@/components/logo";
-
-// Hardcoded list of common models as a fallback
-const commonModels = [
-    { name: "gemini-1.5-flash-latest", label: "Gemini 1.5 Flash" },
-    { name: "gemini-1.0-pro", label: "Gemini 1.0 Pro" },
-    { name: "gemini-pro-vision", label: "Gemini Pro Vision" },
-];
-
+import { useToast } from "@/hooks/use-toast";
+import type { ModelReference } from "genkit/ai";
 
 export default function SettingsPage() {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
   const [targetLanguage, setTargetLanguage] = useLocalStorage("targetLanguage", "fr");
   const [measurementSystem, setMeasurementSystem] = useLocalStorage("measurementSystem", "metric");
-  const [textModel, setTextModel] = useLocalStorage<string>("textModel", "gemini-1.5-flash-latest");
-  const [visionModel, setVisionModel] = useLocalStorage<string>("visionModel", "gemini-pro-vision");
+  const [textModel, setTextModel] = useLocalStorage<string>("textModel", "");
+  const [visionModel, setVisionModel] = useLocalStorage<string>("visionModel", "");
+
+  const [models, setModels] = useState<ModelReference[]>([]);
+  const [loadingModels, setLoadingModels] = useState(true);
 
   const { t } = useTranslation();
+  const { toast } = useToast();
+
+  useEffect(() => {
+    async function fetchModels() {
+      try {
+        const response = await fetch("/api/models");
+        if (!response.ok) {
+          throw new Error(`Failed to fetch models: ${response.statusText}`);
+        }
+        const { data, error } = await response.json();
+
+        if (error) {
+          throw new Error(error);
+        }
+
+        if (!data || data.length === 0) {
+          throw new Error("No models returned from API.");
+        }
+        
+        setModels(data);
+
+        // Set default models only if they are not already set
+        if (!textModel) {
+            const flashModel = data.find((m: ModelReference) => m.name.includes('flash'));
+            if (flashModel) setTextModel(flashModel.name);
+        }
+        if (!visionModel) {
+            const visionModel = data.find((m: ModelReference) => m.name.includes('vision'));
+            if (visionModel) setVisionModel(visionModel.name);
+        }
+
+      } catch (e: any) {
+        toast({
+          variant: "destructive",
+          title: t("Error"),
+          description: e.message || "Could not load AI models.",
+        });
+      } finally {
+        setLoadingModels(false);
+      }
+    }
+    fetchModels();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="flex flex-col gap-8 w-full max-w-2xl">
@@ -61,14 +102,14 @@ export default function SettingsPage() {
         <CardContent className="grid gap-6">
           <div className="grid gap-2">
             <Label htmlFor="text-model">{t('Text Generation Model')}</Label>
-            <Select value={textModel} onValueChange={setTextModel}>
+            <Select value={textModel} onValueChange={setTextModel} disabled={loadingModels}>
                 <SelectTrigger id="text-model">
-                    <SelectValue placeholder={t("Select a model")} />
+                    <SelectValue placeholder={loadingModels ? t("Loading models...") : t("Select a model")} />
                 </SelectTrigger>
                 <SelectContent>
-                    {commonModels.map((model) => (
+                    {models.map((model) => (
                     <SelectItem key={model.name} value={model.name}>
-                        {model.label}
+                        {model.info?.label || model.name}
                     </SelectItem>
                     ))}
                 </SelectContent>
@@ -76,14 +117,14 @@ export default function SettingsPage() {
           </div>
           <div className="grid gap-2">
             <Label htmlFor="vision-model">{t('Vision/Image Model')}</Label>
-             <Select value={visionModel} onValueChange={setVisionModel}>
+             <Select value={visionModel} onValueChange={setVisionModel} disabled={loadingModels}>
                 <SelectTrigger id="vision-model">
-                    <SelectValue placeholder={t("Select a model")} />
+                    <SelectValue placeholder={loadingModels ? t("Loading models...") : t("Select a model")} />
                 </SelectTrigger>
                 <SelectContent>
-                    {commonModels.map((model) => (
+                    {models.map((model) => (
                     <SelectItem key={model.name} value={model.name}>
-                        {model.label}
+                        {model.info?.label || model.name}
                     </SelectItem>
                     ))}
                 </SelectContent>
@@ -107,7 +148,7 @@ export default function SettingsPage() {
             <Select value={targetLanguage} onValueChange={setTargetLanguage}>
               <SelectTrigger id="target-language">
                 <SelectValue placeholder="Select language" />
-              </SelectTrigger>
+              </Trigger>
               <SelectContent>
                 {Object.entries(targetLanguages).map(([code, name]) => (
                   <SelectItem key={code} value={code}>{t(name)}</SelectItem>
