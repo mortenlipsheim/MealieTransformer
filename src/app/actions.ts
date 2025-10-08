@@ -1,6 +1,12 @@
 
 'use server';
 
+// Load environment variables and initialize Genkit
+import { config } from 'dotenv';
+config();
+import '@/ai/genkit';
+
+
 import { extractRecipeFromImage } from '@/ai/flows/extract-recipe-from-image';
 import { transformRecipe } from '@/ai/flows/transform-recipe';
 import type { Recipe } from '@/lib/schema';
