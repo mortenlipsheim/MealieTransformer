@@ -1,10 +1,11 @@
+
 'use server';
 
 import 'dotenv/config';
 import '@/ai/genkit';
 import { listModels, type ModelReference } from 'genkit';
 
-export default async function getAvailableModels(): Promise<{ data: ModelReference[] | null, error: string | null }> {
+export async function getAvailableModels(): Promise<{ data: ModelReference[] | null, error: string | null }> {
   try {
     const allModels: ModelReference[] = await listModels();
     

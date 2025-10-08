@@ -27,7 +27,7 @@ import Logo from "@/components/logo";
 import { useToast } from "@/hooks/use-toast";
 import type { ModelReference } from "genkit/ai";
 import { Skeleton } from "@/components/ui/skeleton";
-import getAvailableModels from './models-action';
+import { getAvailableModels } from './models-action';
 
 export default function SettingsPage() {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
