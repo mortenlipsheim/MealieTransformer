@@ -12,6 +12,7 @@ import {ai} from '@/ai/genkit';
 import {z} from 'zod';
 import { recipeSchema, type Recipe } from '@/lib/schema';
 import { googleAI } from '@genkit-ai/google-genai';
+import { findModel } from './find-model';
 
 
 const TransformRecipeInputSchema = z.object({
@@ -27,22 +28,6 @@ export async function transformRecipe(input: TransformRecipeInput): Promise<Tran
   return transformRecipeFlow(input);
 }
 
-const transformRecipePrompt = ai.definePrompt({
-  name: 'transformRecipePrompt',
-  input: {schema: TransformRecipeInputSchema},
-  output: {schema: recipeSchema},
-  model: googleAI.model(process.env.GEMINI_MODEL_TEXT || 'gemini-1.5-flash'),
-  system: `You are an expert Chef. Your task is to process the provided recipe text and perform these actions:
-1.  **Extract & Generate**: Read the text and identify the key details (title, description, ingredients, instructions, prep time, cook time, and servings). If the source text is missing a title or description, you MUST generate a suitable one based on the content.
-2.  **Convert Units**: Convert all measurements in the ingredients into the {{{measurementSystem}}} system.
-3.  **Translate**: Translate ALL fields (including the title and description you may have generated) into natural-sounding {{{targetLanguage}}}.
-
-Please format the final, processed recipe into the required JSON structure. Do not include any extra text, markdown, or commentary in your response.`,
-  prompt: `Here is the recipe text to process:
-{{{recipeText}}}
-`,
-});
-
 const transformRecipeFlow = ai.defineFlow(
   {
     name: 'transformRecipeFlow',
@@ -50,6 +35,25 @@ const transformRecipeFlow = ai.defineFlow(
     outputSchema: recipeSchema,
   },
   async input => {
+
+    const modelName = await findModel();
+
+    const transformRecipePrompt = ai.definePrompt({
+        name: 'transformRecipePrompt',
+        input: {schema: TransformRecipeInputSchema},
+        output: {schema: recipeSchema},
+        model: googleAI.model(modelName),
+        system: `You are an expert Chef. Your task is to process the provided recipe text and perform these actions:
+      1.  **Extract & Generate**: Read the text and identify the key details (title, description, ingredients, instructions, prep time, cook time, and servings). If the source text is missing a title or description, you MUST generate a suitable one based on the content.
+      2.  **Convert Units**: Convert all measurements in the ingredients into the {{{measurementSystem}}} system.
+      3.  **Translate**: Translate ALL fields (including the title and description you may have generated) into natural-sounding {{{targetLanguage}}}.
+      
+      Please format the final, processed recipe into the required JSON structure. Do not include any extra text, markdown, or commentary in your response.`,
+        prompt: `Here is the recipe text to process:
+      {{{recipeText}}}
+      `,
+      });
+      
     const {output} = await transformRecipePrompt(input);
     if (!output) {
       throw new Error('The AI model could not generate a recipe. The source may not contain a valid recipe.');
