@@ -30,7 +30,7 @@ const transformRecipePrompt = ai.definePrompt({
   name: 'transformRecipePrompt',
   input: {schema: TransformRecipeInputSchema},
   output: {schema: recipeSchema},
-  model: 'googleai/gemini-1.5-flash-latest',
+  model: `googleai/${process.env.GEMINI_MODEL_TEXT || 'gemini-1.5-flash'}`,
   system: `You are an expert Chef. Your task is to process the provided recipe text and perform these actions:
 1.  **Extract & Generate**: Read the text and identify the key details (title, description, ingredients, instructions, prep time, cook time, and servings). If the source text is missing a title or description, you MUST generate a suitable one based on the content.
 2.  **Convert Units**: Convert all measurements in the ingredients into the {{{measurementSystem}}} system.
