@@ -26,6 +26,7 @@ import { uiLanguages, targetLanguages } from "@/lib/translations";
 import Logo from "@/components/logo";
 import { useToast } from "@/hooks/use-toast";
 import type { ModelReference } from "genkit/ai";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function SettingsPage() {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
@@ -43,7 +44,11 @@ export default function SettingsPage() {
 
   useEffect(() => {
     setIsMounted(true);
-    
+  }, []);
+
+  useEffect(() => {
+    if (!isMounted) return;
+
     async function fetchModels() {
       setLoadingModels(true);
       try {
@@ -65,13 +70,16 @@ export default function SettingsPage() {
         setModels(data);
 
         // Set default models only if they are not already set
-        if (!textModel) {
+        if (!textModel && data.length > 0) {
             const flashModel = data.find((m: ModelReference) => m.name.includes('flash'));
             if (flashModel) setTextModel(flashModel.name);
+            else setTextModel(data[0].name); // fallback to the first model
         }
-        if (!visionModel) {
+        if (!visionModel && data.length > 0) {
             const visionModelFound = data.find((m: ModelReference) => m.name.includes('vision'));
             if (visionModelFound) setVisionModel(visionModelFound.name);
+            else if (data.length > 1) setVisionModel(data[1]?.name || data[0].name); // fallback to the second or first model
+            else if (data.length > 0) setVisionModel(data[0].name);
         }
 
       } catch (e: any) {
@@ -86,7 +94,7 @@ export default function SettingsPage() {
     }
     fetchModels();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isMounted]);
 
   return (
     <div className="flex flex-col gap-8 w-full max-w-2xl">
@@ -107,33 +115,41 @@ export default function SettingsPage() {
         <CardContent className="grid gap-6">
           <div className="grid gap-2">
             <Label htmlFor="text-model">{t('Text Generation Model')}</Label>
-            <Select value={textModel} onValueChange={setTextModel} disabled={!isMounted || loadingModels}>
-                <SelectTrigger id="text-model">
-                    <SelectValue placeholder={!isMounted || loadingModels ? t("Loading models...") : t("Select a model")} />
-                </SelectTrigger>
-                <SelectContent>
-                    {models.map((model) => (
-                    <SelectItem key={model.name} value={model.name}>
-                        {model.info?.label || model.name}
-                    </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+            {!isMounted ? (
+                <Skeleton className="h-10 w-full" />
+            ) : (
+                <Select value={textModel} onValueChange={setTextModel} disabled={loadingModels}>
+                    <SelectTrigger id="text-model">
+                        <SelectValue placeholder={loadingModels ? t("Loading models...") : t("Select a model")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {models.map((model) => (
+                        <SelectItem key={model.name} value={model.name}>
+                            {model.info?.label || model.name}
+                        </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+            )}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="vision-model">{t('Vision/Image Model')}</Label>
-             <Select value={visionModel} onValueChange={setVisionModel} disabled={!isMounted || loadingModels}>
-                <SelectTrigger id="vision-model">
-                    <SelectValue placeholder={!isMounted || loadingModels ? t("Loading models...") : t("Select a model")} />
-                </SelectTrigger>
-                <SelectContent>
-                    {models.map((model) => (
-                    <SelectItem key={model.name} value={model.name}>
-                        {model.info?.label || model.name}
-                    </SelectItem>
-                    ))}
-                </SelectContent>
-            </Select>
+            {!isMounted ? (
+                <Skeleton className="h-10 w-full" />
+            ) : (
+                <Select value={visionModel} onValueChange={setVisionModel} disabled={loadingModels}>
+                    <SelectTrigger id="vision-model">
+                        <SelectValue placeholder={loadingModels ? t("Loading models...") : t("Select a model")} />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {models.map((model) => (
+                        <SelectItem key={model.name} value={model.name}>
+                            {model.info?.label || model.name}
+                        </SelectItem>
+                        ))}
+                    </SelectContent>
+                </Select>
+             )}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="ui-language">{t('UI Language')}</Label>
