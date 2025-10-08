@@ -1,6 +1,9 @@
 
 'use server';
 
+import 'dotenv/config';
+import '@/ai/genkit';
+
 import { extractRecipeFromImage } from '@/ai/flows/extract-recipe-from-image';
 import { transformRecipe } from '@/ai/flows/transform-recipe';
 import type { Recipe } from '@/lib/schema';
@@ -12,6 +15,9 @@ type ActionResult<T> = { data: T; error: null } | { data: null; error: string };
 export async function getAvailableModels(): Promise<ActionResult<ModelReference[]>> {
     try {
         const models = await listModels();
+        if (!models || models.length === 0) {
+            throw new Error("No models in the list");
+        }
         return { data: models, error: null };
     } catch (e: any) {
         console.error("Error fetching models:", e);
