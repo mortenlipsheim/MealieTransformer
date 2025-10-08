@@ -4,7 +4,7 @@
 import 'dotenv/config';
 import '@/ai/genkit';
 
-import { listModels, type ModelReference } from 'genkit';
+import { googleAI, type ModelReference } from '@genkit-ai/google-genai';
 import { extractRecipeFromImage } from '@/ai/flows/extract-recipe-from-image';
 import { transformRecipe } from '@/ai/flows/transform-recipe';
 import type { Recipe } from '@/lib/schema';
@@ -14,15 +14,15 @@ type ActionResult<T> = { data: T; error: null } | { data: null; error: string };
 
 export async function getAvailableModels(): Promise<{ data: ModelReference[] | null; error: string | null; }> {
   try {
-    const allModels: ModelReference[] = await listModels();
+    const allModels: ModelReference[] = await googleAI.listModels();
 
     if (!allModels || allModels.length === 0) {
       return { data: null, error: 'No models were returned from the listModels API.' };
     }
 
     const generativeModels = allModels.filter(m =>
-      m.provider === 'googleai' && // Note: provider name might be 'google-ai' or 'googleai'
-      (m.info?.supportedGenerationMethods?.includes("generate"))
+        (m.info?.supportedGenerationMethods?.includes("generate")) &&
+        (m.name.includes('gemini') || m.name.includes('flash') || m.name.includes('vision'))
     );
 
     if (generativeModels.length === 0) {
