@@ -65,8 +65,8 @@ export default function SettingsPage() {
             if (flashModel) setTextModel(flashModel.name);
         }
         if (!visionModel) {
-            const visionModel = data.find((m: ModelReference) => m.name.includes('vision'));
-            if (visionModel) setVisionModel(visionModel.name);
+            const visionModelFound = data.find((m: ModelReference) => m.name.includes('vision'));
+            if (visionModelFound) setVisionModel(visionModelFound.name);
         }
 
       } catch (e: any) {
@@ -148,7 +148,7 @@ export default function SettingsPage() {
             <Select value={targetLanguage} onValueChange={setTargetLanguage}>
               <SelectTrigger id="target-language">
                 <SelectValue placeholder="Select language" />
-              </Trigger>
+              </SelectTrigger>
               <SelectContent>
                 {Object.entries(targetLanguages).map(([code, name]) => (
                   <SelectItem key={code} value={code}>{t(name)}</SelectItem>
