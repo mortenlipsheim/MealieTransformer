@@ -49,7 +49,7 @@ export default function SettingsPage() {
         toast({
           variant: "destructive",
           title: t("Error"),
-          description: t("Could not load AI models. Please try again later."),
+          description: error,
         });
       } else if (data) {
         setModels(data);
@@ -139,7 +139,7 @@ export default function SettingsPage() {
             <Select value={targetLanguage} onValueChange={setTargetLanguage}>
               <SelectTrigger id="target-language">
                 <SelectValue placeholder="Select language" />
-              </SelectTrigger>
+              </Trigger>
               <SelectContent>
                 {Object.entries(targetLanguages).map(([code, name]) => (
                   <SelectItem key={code} value={code}>{t(name)}</SelectItem>
