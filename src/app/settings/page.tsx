@@ -42,10 +42,12 @@ export default function SettingsPage() {
 
   useEffect(() => {
     async function fetchModels() {
+      setLoadingModels(true);
       try {
         const response = await fetch("/api/models");
         if (!response.ok) {
-          throw new Error(`Failed to fetch models: ${response.statusText}`);
+           const errorData = await response.json();
+          throw new Error(errorData.error || `Failed to fetch models: ${response.statusText}`);
         }
         const { data, error } = await response.json();
 

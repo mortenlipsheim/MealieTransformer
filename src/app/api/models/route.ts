@@ -15,8 +15,11 @@ export async function GET() {
       );
     }
     
-    // Filter for only generative models
-    const generativeModels = allModels.filter(m => m.info?.supportedGenerationMethods?.includes("generate"));
+    // Filter for only generative models from Google AI
+    const generativeModels = allModels.filter(m => 
+        m.provider === 'google-ai' &&
+        m.info?.supportedGenerationMethods?.includes("generate")
+    );
 
     return NextResponse.json({ data: generativeModels, error: null });
   } catch (e: any) {
