@@ -9,6 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import { googleAI } from '@genkit-ai/googleai';
 import {z} from 'genkit';
 
 const ExtractRecipeFromImageInputSchema = z.object({
@@ -38,7 +39,7 @@ const extractRecipeFromImagePrompt = ai.definePrompt({
   name: 'extractRecipeFromImagePrompt',
   input: {schema: ExtractRecipeFromImageInputSchema},
   output: {schema: ExtractRecipeFromImageOutputSchema},
-  model: process.env.GEMINI_MODEL_VISION || 'gemini-1.5-flash',
+  model: googleAI.model(process.env.GEMINI_MODEL_VISION || 'gemini-1.5-flash'),
   prompt: `You are an expert at extracting text from a series of recipe images. The images might be pages of a cookbook or handwritten notes.
 
   Extract and combine the text from all the following images into a single recipe text.
