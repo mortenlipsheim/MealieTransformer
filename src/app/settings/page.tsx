@@ -1,7 +1,7 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,45 +20,27 @@ import {
 import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import Link from "next/link";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
 import Logo from "@/components/logo";
-import getAvailableModels from "../models-action";
-import { useToast } from "@/hooks/use-toast";
-import type { ModelReference } from "genkit";
+
+// Hardcoded list of common models as a fallback
+const commonModels = [
+    { name: "gemini-1.5-flash-latest", label: "Gemini 1.5 Flash" },
+    { name: "gemini-1.0-pro", label: "Gemini 1.0 Pro" },
+    { name: "gemini-pro-vision", label: "Gemini Pro Vision" },
+];
+
 
 export default function SettingsPage() {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
   const [targetLanguage, setTargetLanguage] = useLocalStorage("targetLanguage", "fr");
   const [measurementSystem, setMeasurementSystem] = useLocalStorage("measurementSystem", "metric");
-  const [textModel, setTextModel] = useLocalStorage<string>("textModel", "");
-  const [visionModel, setVisionModel] = useLocalStorage<string>("visionModel", "");
-
-  const [models, setModels] = useState<ModelReference[]>([]);
-  const [loadingModels, setLoadingModels] = useState(true);
+  const [textModel, setTextModel] = useLocalStorage<string>("textModel", "gemini-1.5-flash-latest");
+  const [visionModel, setVisionModel] = useLocalStorage<string>("visionModel", "gemini-pro-vision");
 
   const { t } = useTranslation();
-  const { toast } = useToast();
-
-  useEffect(() => {
-    const fetchModels = async () => {
-      setLoadingModels(true);
-      const { data, error } = await getAvailableModels();
-      if (error) {
-        toast({
-          variant: "destructive",
-          title: t("Error"),
-          description: error,
-        });
-      } else if (data) {
-        setModels(data);
-      }
-      setLoadingModels(false);
-    };
-    fetchModels();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <div className="flex flex-col gap-8 w-full max-w-2xl">
@@ -79,47 +61,33 @@ export default function SettingsPage() {
         <CardContent className="grid gap-6">
           <div className="grid gap-2">
             <Label htmlFor="text-model">{t('Text Generation Model')}</Label>
-            {loadingModels ? (
-              <div className="flex items-center gap-2">
-                <Loader2 className="animate-spin" />
-                <span>{t("Loading models...")}</span>
-              </div>
-            ) : (
-                <Select value={textModel} onValueChange={setTextModel}>
-                    <SelectTrigger id="text-model">
-                        <SelectValue placeholder={t("Select a model")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {models.map((model) => (
-                        <SelectItem key={model.name} value={model.name}>
-                            {model.info?.label || model.name}
-                        </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            )}
+            <Select value={textModel} onValueChange={setTextModel}>
+                <SelectTrigger id="text-model">
+                    <SelectValue placeholder={t("Select a model")} />
+                </SelectTrigger>
+                <SelectContent>
+                    {commonModels.map((model) => (
+                    <SelectItem key={model.name} value={model.name}>
+                        {model.label}
+                    </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="vision-model">{t('Vision/Image Model')}</Label>
-            {loadingModels ? (
-                 <div className="flex items-center gap-2">
-                    <Loader2 className="animate-spin" />
-                    <span>{t("Loading models...")}</span>
-                 </div>
-            ) : (
-                <Select value={visionModel} onValueChange={setVisionModel}>
-                    <SelectTrigger id="vision-model">
-                        <SelectValue placeholder={t("Select a model")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                        {models.map((model) => (
-                        <SelectItem key={model.name} value={model.name}>
-                             {model.info?.label || model.name}
-                        </SelectItem>
-                        ))}
-                    </SelectContent>
-                </Select>
-            )}
+             <Select value={visionModel} onValueChange={setVisionModel}>
+                <SelectTrigger id="vision-model">
+                    <SelectValue placeholder={t("Select a model")} />
+                </SelectTrigger>
+                <SelectContent>
+                    {commonModels.map((model) => (
+                    <SelectItem key={model.name} value={model.name}>
+                        {model.label}
+                    </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
           </div>
           <div className="grid gap-2">
             <Label htmlFor="ui-language">{t('UI Language')}</Label>
