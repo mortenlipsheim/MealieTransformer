@@ -1,8 +1,7 @@
 
 import 'dotenv/config';
 import '@/ai/genkit'; // Ensure plugins are registered
-import type { ModelReference } from 'genkit/ai';
-import { listModels } from 'genkit/ai';
+import { listModels, type ModelReference } from 'genkit';
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -20,7 +19,7 @@ async function getAvailableModels(): Promise<{ data: ModelReference[] | null; er
 
     const generativeModels = allModels.filter(m =>
       m.provider === 'google-ai' &&
-      m.info?.supportedGenerationMethods?.includes("generate")
+      (m.info?.supportedGenerationMethods?.includes("generate"))
     );
 
     if (generativeModels.length === 0) {
