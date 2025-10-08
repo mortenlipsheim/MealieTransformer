@@ -124,7 +124,7 @@ export default function SettingsForm({ textModels, visionModels, modelsError }: 
           <Select value={targetLanguage} onValueChange={setTargetLanguage}>
             <SelectTrigger id="target-language">
               <SelectValue placeholder="Select language" />
-            </SelectTrigger>
+            </Trigger>
             <SelectContent>
               {Object.entries(targetLanguages).map(([code, name]) => (
                 <SelectItem key={code} value={code}>{t(name)}</SelectItem>
