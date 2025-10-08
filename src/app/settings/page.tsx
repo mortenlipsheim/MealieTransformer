@@ -1,7 +1,8 @@
 
 import 'dotenv/config';
-import { ai } from '@/ai/genkit';
+import '@/ai/genkit'; // Ensure plugins are registered
 import type { ModelReference } from 'genkit/ai';
+import { listModels } from 'genkit/ai';
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -11,7 +12,7 @@ import SettingsForm from "./settings-form";
 
 async function getAvailableModels(): Promise<{ data: ModelReference[] | null; error: string | null; }> {
   try {
-    const allModels: ModelReference[] = await ai.listModels();
+    const allModels: ModelReference[] = await listModels();
 
     if (!allModels || allModels.length === 0) {
       return { data: null, error: 'No models were returned from the listModels API.' };
