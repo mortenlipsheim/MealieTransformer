@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -27,6 +26,7 @@ import Logo from "@/components/logo";
 import { useToast } from "@/hooks/use-toast";
 import type { ModelReference } from "genkit/ai";
 import { Skeleton } from "@/components/ui/skeleton";
+import getAvailableModels from './models-action';
 
 export default function SettingsPage() {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
@@ -52,12 +52,7 @@ export default function SettingsPage() {
     async function fetchModels() {
       setLoadingModels(true);
       try {
-        const response = await fetch("/api/models");
-        if (!response.ok) {
-           const errorData = await response.json();
-          throw new Error(errorData.error || `Failed to fetch models: ${response.statusText}`);
-        }
-        const { data, error } = await response.json();
+        const { data, error } = await getAvailableModels();
 
         if (error) {
           throw new Error(error);
@@ -169,7 +164,7 @@ export default function SettingsPage() {
             <Select value={targetLanguage} onValueChange={setTargetLanguage}>
               <SelectTrigger id="target-language">
                 <SelectValue placeholder="Select language" />
-              </SelectTrigger>
+              </Trigger>
               <SelectContent>
                 {Object.entries(targetLanguages).map(([code, name]) => (
                   <SelectItem key={code} value={code}>{t(name)}</SelectItem>
