@@ -4,41 +4,12 @@
 import 'dotenv/config';
 import '@/ai/genkit';
 
-import { googleAI, type ModelReference } from '@genkit-ai/google-genai';
 import { extractRecipeFromImage } from '@/ai/flows/extract-recipe-from-image';
 import { transformRecipe } from '@/ai/flows/transform-recipe';
 import type { Recipe } from '@/lib/schema';
 import { targetLanguages } from '@/lib/translations';
 
 type ActionResult<T> = { data: T; error: null } | { data: null; error: string };
-
-export async function getAvailableModels(): Promise<{ data: ModelReference[] | null; error: string | null; }> {
-  try {
-    const allModels: ModelReference[] = await googleAI.listModels();
-
-    if (!allModels || allModels.length === 0) {
-      return { data: null, error: 'No models were returned from the listModels API.' };
-    }
-
-    const generativeModels = allModels.filter(m =>
-        (m.info?.supportedGenerationMethods?.includes("generate")) &&
-        (m.name.includes('gemini') || m.name.includes('flash') || m.name.includes('vision'))
-    );
-
-    if (generativeModels.length === 0) {
-      return { data: null, error: 'No generative models found. Please check your Google AI project and API key.' };
-    }
-
-    return { data: generativeModels, error: null };
-  } catch (e: any) {
-    console.error("Error fetching models:", e);
-    const errorMessage = e.message || 'An unknown error occurred while fetching models.';
-    if (errorMessage.toLowerCase().includes('api key not valid')) {
-        return { data: null, error: 'The provided Google AI API Key is not valid. Please check your .env file.' };
-    }
-    return { data: null, error: errorMessage };
-  }
-}
 
 async function fetchHtml(url: string): Promise<string> {
   try {

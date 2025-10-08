@@ -20,53 +20,34 @@ import { Label } from "@/components/ui/label";
 import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
-import { useToast } from "@/hooks/use-toast";
-import type { ModelReference } from "genkit/ai";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
-interface SettingsFormProps {
-  models: ModelReference[] | null;
-  modelsError: string | null;
-}
+// Hardcoded list of models
+const models = [
+    { name: 'gemini-1.5-flash', info: { label: 'Gemini 1.5 Flash' } },
+    { name: 'gemini-1.5-pro', info: { label: 'Gemini 1.5 Pro' } },
+    { name: 'gemini-1.0-pro', info: { label: 'Gemini 1.0 Pro' } },
+];
 
-export default function SettingsForm({ models, modelsError }: SettingsFormProps) {
+const visionModels = [
+    { name: 'gemini-1.5-flash', info: { label: 'Gemini 1.5 Flash' } },
+    { name: 'gemini-1.5-pro', info: { label: 'Gemini 1.5 Pro' } },
+    { name: 'gemini-pro-vision', info: { label: 'Gemini Pro Vision' } },
+]
+
+export default function SettingsForm() {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
   const [targetLanguage, setTargetLanguage] = useLocalStorage("targetLanguage", "fr");
   const [measurementSystem, setMeasurementSystem] = useLocalStorage("measurementSystem", "metric");
-  const [textModel, setTextModel] = useLocalStorage<string>("textModel", "");
-  const [visionModel, setVisionModel] = useLocalStorage<string>("visionModel", "");
+  const [textModel, setTextModel] = useLocalStorage<string>("textModel", "gemini-1.5-flash");
+  const [visionModel, setVisionModel] = useLocalStorage<string>("visionModel", "gemini-1.5-flash");
   const [isMounted, setIsMounted] = useState(false);
 
   const { t } = useTranslation();
-  const { toast } = useToast();
 
   useEffect(() => {
     setIsMounted(true);
-
-    if (modelsError) {
-      toast({
-        variant: "destructive",
-        title: t("Error"),
-        description: modelsError,
-      });
-    }
-
-    if (models) {
-      if (!textModel) {
-        const flashModel = models.find((m: ModelReference) => m.name.includes('flash'));
-        if (flashModel) setTextModel(flashModel.name);
-        else if (models.length > 0) setTextModel(models[0].name);
-      }
-      if (!visionModel) {
-        const visionModelFound = models.find((m: ModelReference) => m.name.includes('vision'));
-        if (visionModelFound) setVisionModel(visionModelFound.name);
-        else if (models.length > 1) setVisionModel(models[1]?.name || models[0].name);
-        else if (models.length > 0) setVisionModel(models[0].name);
-      }
-    }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [models, modelsError, t, toast]);
+  }, []);
 
   if (!isMounted) {
     return (
@@ -93,17 +74,11 @@ export default function SettingsForm({ models, modelsError }: SettingsFormProps)
         <CardDescription>{t('Configure the recipe transformation and translation settings.')}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
-        {modelsError && (
-          <Alert variant="destructive">
-            <AlertTitle>{t("Error Loading Models")}</AlertTitle>
-            <AlertDescription>{modelsError}</AlertDescription>
-          </Alert>
-        )}
         <div className="grid gap-2">
           <Label htmlFor="text-model">{t('Text Generation Model')}</Label>
-          <Select value={textModel} onValueChange={setTextModel} disabled={!models}>
+          <Select value={textModel} onValueChange={setTextModel}>
             <SelectTrigger id="text-model">
-              <SelectValue placeholder={!models ? t("Loading models...") : t("Select a model")} />
+              <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
             <SelectContent>
               {models?.map((model) => (
@@ -116,12 +91,12 @@ export default function SettingsForm({ models, modelsError }: SettingsFormProps)
         </div>
         <div className="grid gap-2">
           <Label htmlFor="vision-model">{t('Vision/Image Model')}</Label>
-          <Select value={visionModel} onValueChange={setVisionModel} disabled={!models}>
+          <Select value={visionModel} onValueChange={setVisionModel}>
             <SelectTrigger id="vision-model">
-              <SelectValue placeholder={!models ? t("Loading models...") : t("Select a model")} />
+              <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
             <SelectContent>
-              {models?.map((model) => (
+              {visionModels?.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
                   {model.info?.label || model.name}
                 </SelectItem>
