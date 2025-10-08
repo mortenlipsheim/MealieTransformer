@@ -5,8 +5,26 @@ import { extractRecipeFromImage } from '@/ai/flows/extract-recipe-from-image';
 import { transformRecipe } from '@/ai/flows/transform-recipe';
 import type { Recipe } from '@/lib/schema';
 import { targetLanguages } from '@/lib/translations';
+import { listModels, type ModelReference } from 'genkit';
 
 type ActionResult<T> = { data: T; error: null } | { data: null; error: string };
+
+export async function getAvailableModels(): Promise<ActionResult<ModelReference[]>> {
+    try {
+        const models = await listModels();
+        const availableModels = models.filter(
+            (m) => m.info?.supportedGenerationMethods.includes('generate')
+        );
+        return { data: availableModels, error: null };
+    } catch (e: any) {
+        console.error("Error fetching models:", e);
+        return {
+            data: null,
+            error: e.message || "Could not fetch available AI models."
+        };
+    }
+}
+
 
 async function fetchHtml(url: string): Promise<string> {
   try {
@@ -27,22 +45,30 @@ export async function handleRecipeTransform({
   targetLanguage,
   measurementSystem,
   sourceType = 'text',
+  textModel,
+  visionModel,
 }: {
   source?: string;
   sourceImages?: string[];
   targetLanguage: string;
   measurementSystem: 'metric' | 'us' | 'imperial';
   sourceType: 'url' | 'text' | 'image';
+  textModel: string;
+  visionModel: string;
 }): Promise<ActionResult<Recipe>> {
 
   try {
     let recipeText: string | undefined;
 
+    if (!textModel || !visionModel) {
+        return { data: null, error: 'Text and Vision models must be selected in Settings.' };
+    }
+
     if (sourceType === 'image') {
         if (!sourceImages || sourceImages.length === 0) {
             return { data: null, error: 'No images provided for transformation.' };
         }
-      const extractedTextData = await extractRecipeFromImage({ imageDataUris: sourceImages });
+      const extractedTextData = await extractRecipeFromImage({ modelName: visionModel, imageDataUris: sourceImages });
       recipeText = extractedTextData.recipeText;
 
     } else if (sourceType === 'url') {
@@ -61,6 +87,7 @@ export async function handleRecipeTransform({
     const languageName = targetLanguages[targetLanguage] || targetLanguage;
 
     const finalData = await transformRecipe({
+        modelName: textModel,
         recipeText: recipeText,
         targetLanguage: languageName,
         measurementSystem,

@@ -11,9 +11,9 @@
 import {ai} from '@/ai/genkit';
 import { googleAI } from '@genkit-ai/google-genai';
 import {z} from 'genkit';
-import { findModel } from './find-model';
 
 const ExtractRecipeFromImageInputSchema = z.object({
+  modelName: z.string().describe("The name of the generative model to use."),
   imageDataUris: z
     .array(z.string())
     .describe(
@@ -43,14 +43,12 @@ const extractRecipeFromImageFlow = ai.defineFlow(
     outputSchema: ExtractRecipeFromImageOutputSchema,
   },
   async (input): Promise<ExtractRecipeFromImageOutput> => {
-
-    const modelName = await findModel();
     
     const extractRecipeFromImagePrompt = ai.definePrompt({
         name: 'extractRecipeFromImagePrompt',
         input: {schema: ExtractRecipeFromImageInputSchema},
         output: {schema: ExtractRecipeFromImageOutputSchema},
-        model: googleAI.model(modelName),
+        model: googleAI.model(input.modelName),
         prompt: `You are an expert at extracting text from a series of recipe images. The images might be pages of a cookbook or handwritten notes.
       
         Extract and combine the text from all the following images into a single recipe text.
