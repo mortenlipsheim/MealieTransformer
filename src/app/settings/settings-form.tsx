@@ -100,7 +100,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
         </div>
         <div className="grid gap-2">
           <Label htmlFor="vision-model">{t('Vision/Image Model')}</Label>
-          <Select value={visionModel} onValuechange={setVisionModel}>
+          <Select value={visionModel} onValueChange={setVisionModel}>
             <SelectTrigger id="vision-model">
               <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
