@@ -24,24 +24,24 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { ModelReference } from 'genkit/ai';
 
+const hardcodedTextModels: ModelReference[] = [
+  { name: 'gemini-1.5-flash-latest', supports: { generate: true }, label: "Gemini 1.5 Flash" },
+  { name: 'gemini-1.5-pro-latest', supports: { generate: true }, label: "Gemini 1.5 Pro" },
+  { name: 'gemini-1.0-pro', supports: { generate: true }, label: "Gemini 1.0 Pro" },
+];
+
+const hardcodedVisionModels: ModelReference[] = [
+  { name: 'gemini-1.5-flash-latest', supports: { generate: true }, label: "Gemini 1.5 Flash" },
+  { name: 'gemini-1.5-pro-latest', supports: { generate: true }, label: "Gemini 1.5 Pro" },
+];
+
 interface SettingsFormProps {
   textModels: ModelReference[];
   visionModels: ModelReference[];
   modelsError: string | null;
 }
 
-const hardcodedTextModels: ModelReference[] = [
-  { name: 'gemini-1.5-flash-latest', supports: { generate: true } },
-  { name: 'gemini-1.5-pro-latest', supports: { generate: true } },
-  { name: 'gemini-1.0-pro', supports: { generate: true } },
-];
-
-const hardcodedVisionModels: ModelReference[] = [
-  { name: 'gemini-1.5-flash-latest', supports: { generate: true } },
-  { name: 'gemini-1.5-pro-latest', supports: { generate: true } },
-];
-
-const SettingsForm = ({ textModels, visionModels, modelsError }: SettingsFormProps) => {
+const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, modelsError }) => {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
   const [targetLanguage, setTargetLanguage] = useLocalStorage("targetLanguage", "fr");
   const [measurementSystem, setMeasurementSystem] = useLocalStorage("measurementSystem", "metric");
@@ -56,6 +56,7 @@ const SettingsForm = ({ textModels, visionModels, modelsError }: SettingsFormPro
   }, []);
 
   const getModelLabel = (model: ModelReference) => {
+    if (model.label) return model.label;
     return model.name
       .split('-')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
