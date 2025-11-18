@@ -35,14 +35,14 @@ const hardcodedVisionModels: ModelReference[] = [
     { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
 ];
 
-export default function SettingsForm({ 
-  textModels: serverTextModels, 
+export default function SettingsForm({
+  textModels: serverTextModels,
   visionModels: serverVisionModels,
-  modelsError 
-}: { 
-  textModels: ModelReference[], 
+  modelsError
+}: {
+  textModels: ModelReference[],
   visionModels: ModelReference[],
-  modelsError: string | null 
+  modelsError: string | null
 }) {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
   const [targetLanguage, setTargetLanguage] = useLocalStorage("targetLanguage", "fr");
@@ -57,8 +57,8 @@ export default function SettingsForm({
     setIsMounted(true);
   }, []);
 
-  const textModels = modelsError ? hardcodedTextModels : serverTextModels;
-  const visionModels = modelsError ? hardcodedVisionModels : serverVisionModels;
+  const textModels = (serverTextModels && serverTextModels.length > 0) ? serverTextModels : hardcodedTextModels;
+  const visionModels = (serverVisionModels && serverVisionModels.length > 0) ? serverVisionModels : hardcodedVisionModels;
 
   if (!isMounted) {
     return (
