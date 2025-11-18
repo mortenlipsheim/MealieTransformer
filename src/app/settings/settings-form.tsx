@@ -142,7 +142,7 @@ export default function SettingsForm({ textModels, visionModels, modelsError }: 
           >
             <SelectTrigger id="measurement-system">
               <SelectValue placeholder="Select system" />
-            </SelectTrigger>
+            </Trigger>
             <SelectContent>
               <SelectItem value="metric">{t('Metric')}</SelectItem>
               <SelectItem value="us">{t('US')}</SelectItem>
