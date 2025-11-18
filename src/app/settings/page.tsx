@@ -23,7 +23,9 @@ const hardcodedVisionModels: ModelReference[] = [
 
 async function getAvailableModels(): Promise<{ data: ModelReference[] | null; error: string | null; }> {
   try {
+    console.log("Attempting to call listModels()...");
     const allModels = await listModels();
+    console.log("Successfully listed models:", allModels);
 
     if (!allModels || allModels.length === 0) {
       return { data: null, error: 'No models were returned from the listModels API. Using hardcoded fallbacks.' };
@@ -36,7 +38,7 @@ async function getAvailableModels(): Promise<{ data: ModelReference[] | null; er
 
     return { data: supportedModels, error: null };
   } catch (e: any) {
-    console.error('Failed to list models:', e);
+    console.error('Error calling listModels():', e); // <-- ADDED THIS LOG
     // Return hardcoded models as a fallback
     return { 
       data: [...hardcodedTextModels, ...hardcodedVisionModels], 
