@@ -59,8 +59,8 @@ export default function SettingsForm({
     setIsMounted(true);
   }, []);
 
-  const textModels = (serverTextModels && serverTextModels.length > 0) ? serverTextModels : hardcodedTextModels;
-  const visionModels = (serverVisionModels && serverVisionModels.length > 0) ? serverVisionModels : hardcodedVisionModels;
+  const availableTextModels = (serverTextModels && serverTextModels.length > 0) ? serverTextModels : hardcodedTextModels;
+  const availableVisionModels = (serverVisionModels && serverVisionModels.length > 0) ? serverVisionModels : hardcodedVisionModels;
 
   if (!isMounted) {
     return (
@@ -100,7 +100,7 @@ export default function SettingsForm({
               <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
             <SelectContent>
-              {textModels.map((model) => (
+              {availableTextModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
                   {model.label || model.name}
                 </SelectItem>
@@ -115,7 +115,7 @@ export default function SettingsForm({
               <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
             <SelectContent>
-              {visionModels.map((model) => (
+              {availableVisionModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
                   {model.label || model.name}
                 </SelectItem>
