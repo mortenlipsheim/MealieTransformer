@@ -1,6 +1,6 @@
 
 import '@/ai/genkit'; // Ensure plugins are registered
-import { listModels, type ModelReference } from 'genkit';
+import { listModels, type ModelReference } from 'genkit/models';
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -39,7 +39,7 @@ async function getAvailableModels(): Promise<{ data: ModelReference[] | null; er
     // Return the specific error message for debugging in the UI
     const errorMessage = `Could not load AI models from API. Reason: ${e.message || 'An unknown error occurred.'}`;
     return { 
-      data: [...hardcodedTextModels, ...hardcodedVisionModels], 
+      data: null, 
       error: errorMessage
     };
   }
