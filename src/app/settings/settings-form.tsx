@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { ModelReference } from "genkit/ai";
 import {
   Card,
   CardContent,
@@ -26,12 +25,10 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 
 interface SettingsFormProps {
-    textModels: ModelReference[];
-    visionModels: ModelReference[];
     modelsError: string | null;
 }
 
-export default function SettingsForm({ textModels, visionModels, modelsError }: SettingsFormProps) {
+export default function SettingsForm({ modelsError }: SettingsFormProps) {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
   const [targetLanguage, setTargetLanguage] = useLocalStorage("targetLanguage", "fr");
   const [measurementSystem, setMeasurementSystem] = useLocalStorage("measurementSystem", "metric");
@@ -44,6 +41,15 @@ export default function SettingsForm({ textModels, visionModels, modelsError }: 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Hardcoded model lists to avoid server-side fetching issues.
+  const textModels = [
+    { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
+  ];
+  const visionModels = [
+    { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
+    { name: 'gemini-pro-vision', label: 'Gemini Pro Vision' },
+  ];
 
   if (!isMounted) {
     return (
