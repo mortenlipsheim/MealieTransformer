@@ -25,27 +25,26 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { ModelReference } from 'genkit/ai';
 
 // Define hardcoded models outside the component
-const hardcodedTextModels = [
+const hardcodedTextModels: { name: string; label: string; }[] = [
   { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
   { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
   { name: 'gemini-1.0-pro', label: 'Gemini 1.0 Pro' },
 ];
 
-const hardcodedVisionModels = [
+const hardcodedVisionModels: { name: string; label: string; }[] = [
   { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
   { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
 ];
 
-
-export default function SettingsForm({
-  textModels: serverTextModels,
-  visionModels: serverVisionModels,
+const SettingsForm = ({
+  textModels,
+  visionModels,
   modelsError
 }: {
   textModels: ModelReference[],
   visionModels: ModelReference[],
   modelsError: string | null
-}) {
+}) => {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
   const [targetLanguage, setTargetLanguage] = useLocalStorage("targetLanguage", "fr");
   const [measurementSystem, setMeasurementSystem] = useLocalStorage("measurementSystem", "metric");
@@ -59,8 +58,8 @@ export default function SettingsForm({
     setIsMounted(true);
   }, []);
 
-  const availableTextModels = (serverTextModels && serverTextModels.length > 0) ? serverTextModels : hardcodedTextModels;
-  const availableVisionModels = (serverVisionModels && serverVisionModels.length > 0) ? serverVisionModels : hardcodedVisionModels;
+  const availableTextModels = (textModels && textModels.length > 0) ? textModels : hardcodedTextModels;
+  const availableVisionModels = (visionModels && visionModels.length > 0) ? visionModels : hardcodedVisionModels;
 
   if (!isMounted) {
     return (
@@ -170,4 +169,8 @@ export default function SettingsForm({
       </CardContent>
     </Card>
   );
-}
+};
+
+export default SettingsForm;
+
+    
