@@ -24,14 +24,24 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { ModelReference } from 'genkit/ai';
 
-// Define a simpler type for our hardcoded models
+// Define a simpler type for our hardcoded models to avoid conflicts
 type SimpleModel = {
   name: string;
   label: string;
-  supports?: ModelReference['supports'];
-  path?: string;
-  version?: string;
 };
+
+// Define hardcoded models outside the component
+const hardcodedTextModels: SimpleModel[] = [
+  { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
+  { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
+  { name: 'gemini-1.0-pro', label: 'Gemini 1.0 Pro' },
+];
+
+const hardcodedVisionModels: SimpleModel[] = [
+  { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
+  { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
+];
+
 
 export default function SettingsForm({
   textModels: serverTextModels,
@@ -54,17 +64,6 @@ export default function SettingsForm({
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  const hardcodedTextModels: SimpleModel[] = [
-    { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
-    { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
-    { name: 'gemini-1.0-pro', label: 'Gemini 1.0 Pro' },
-  ];
-  
-  const hardcodedVisionModels: SimpleModel[] = [
-    { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
-    { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
-  ];
 
   const textModels = (serverTextModels && serverTextModels.length > 0) ? serverTextModels : hardcodedTextModels;
   const visionModels = (serverVisionModels && serverVisionModels.length > 0) ? serverVisionModels : hardcodedVisionModels;
