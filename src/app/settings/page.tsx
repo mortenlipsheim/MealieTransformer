@@ -1,4 +1,3 @@
-
 import '@/ai/genkit'; // Ensure plugins are registered
 import { listModels, type ModelReference } from 'genkit/models';
 import Link from "next/link";
