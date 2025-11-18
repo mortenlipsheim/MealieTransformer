@@ -23,9 +23,7 @@ const hardcodedVisionModels: ModelReference[] = [
 
 async function getAvailableModels(): Promise<{ data: ModelReference[] | null; error: string | null; }> {
   try {
-    console.log("Attempting to call listModels()...");
     const allModels = await listModels();
-    console.log("Successfully listed models:", allModels);
 
     if (!allModels || allModels.length === 0) {
       return { data: null, error: 'No models were returned from the listModels API. Using hardcoded fallbacks.' };
@@ -38,11 +36,11 @@ async function getAvailableModels(): Promise<{ data: ModelReference[] | null; er
 
     return { data: supportedModels, error: null };
   } catch (e: any) {
-    console.error('Error calling listModels():', e); // <-- ADDED THIS LOG
-    // Return hardcoded models as a fallback
+    // Return the specific error message for debugging in the UI
+    const errorMessage = `Could not load AI models from API. Reason: ${e.message || 'An unknown error occurred.'}`;
     return { 
       data: [...hardcodedTextModels, ...hardcodedVisionModels], 
-      error: 'Could not load AI models from API. Using hardcoded fallbacks. Please check your configuration and API key.' 
+      error: errorMessage
     };
   }
 }
