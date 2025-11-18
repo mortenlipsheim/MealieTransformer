@@ -9,15 +9,27 @@ import { Button } from "@/components/ui/button";
 import Logo from "@/components/logo";
 import SettingsForm from "./settings-form";
 
+// Hardcoded fallbacks in case the model listing API fails
+const hardcodedTextModels: ModelReference[] = [
+  { name: 'gemini-1.5-flash-latest', supports: { generate: true }, label: "Gemini 1.5 Flash" },
+  { name: 'gemini-1.5-pro-latest', supports: { generate: true }, label: "Gemini 1.5 Pro" },
+  { name: 'gemini-1.0-pro', supports: { generate: true }, label: "Gemini 1.0 Pro" },
+];
+
+const hardcodedVisionModels: ModelReference[] = [
+  { name: 'gemini-1.5-flash-latest', supports: { generate: true }, label: "Gemini 1.5 Flash" },
+  { name: 'gemini-1.5-pro-latest', supports: { generate: true }, label: "Gemini 1.5 Pro" },
+];
+
+
 async function getAvailableModels(): Promise<{ data: ModelReference[] | null; error: string | null; }> {
   try {
     const allModels = await listModels();
 
     if (!allModels || allModels.length === 0) {
-      return { data: null, error: 'No models were returned from the listModels API.' };
+      return { data: null, error: 'No models were returned from the listModels API. Using hardcoded fallbacks.' };
     }
     
-    // Filter for models that support 'generateContent'
     const supportedModels = allModels.filter(m => 
       m.supports.generateContent && 
       (m.name.includes('gemini') || m.name.includes('flash') || m.name.includes('pro'))
@@ -26,7 +38,11 @@ async function getAvailableModels(): Promise<{ data: ModelReference[] | null; er
     return { data: supportedModels, error: null };
   } catch (e: any) {
     console.error('Failed to list models:', e);
-    return { data: null, error: 'Could not load AI models. Please check your configuration and API key.' };
+    // Return hardcoded models as a fallback
+    return { 
+      data: [...hardcodedTextModels, ...hardcodedVisionModels], 
+      error: 'Could not load AI models from API. Using hardcoded fallbacks. Please check your configuration and API key.' 
+    };
   }
 }
 
@@ -34,9 +50,20 @@ async function getAvailableModels(): Promise<{ data: ModelReference[] | null; er
 export default async function SettingsPage() {
   const { data: models, error: modelsError } = await getAvailableModels();
 
-  // Separate the models into text and vision based on their names
-  const textModels = models?.filter(m => !m.name.includes('vision')) || [];
-  const visionModels = models?.filter(m => m.name.includes('vision') || m.name.includes('flash') || m.name.includes('pro')) || [];
+  let textModels: ModelReference[];
+  let visionModels: ModelReference[];
+
+  if (!models || models.length === 0) {
+      textModels = hardcodedTextModels;
+      visionModels = hardcodedVisionModels;
+  } else {
+    // Separate the models into text and vision based on their names
+    textModels = models.filter(m => !m.name.includes('vision')) || [];
+    visionModels = models.filter(m => m.name.includes('vision') || m.name.includes('flash') || m.name.includes('pro')) || [];
+
+    if (textModels.length === 0) textModels = hardcodedTextModels;
+    if (visionModels.length === 0) visionModels = hardcodedVisionModels;
+  }
 
 
   return (

@@ -24,17 +24,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { ModelReference } from 'genkit/ai';
 
-const hardcodedTextModels: ModelReference[] = [
-  { name: 'gemini-1.5-flash-latest', supports: { generate: true }, label: "Gemini 1.5 Flash" },
-  { name: 'gemini-1.5-pro-latest', supports: { generate: true }, label: "Gemini 1.5 Pro" },
-  { name: 'gemini-1.0-pro', supports: { generate: true }, label: "Gemini 1.0 Pro" },
-];
-
-const hardcodedVisionModels: ModelReference[] = [
-  { name: 'gemini-1.5-flash-latest', supports: { generate: true }, label: "Gemini 1.5 Flash" },
-  { name: 'gemini-1.5-pro-latest', supports: { generate: true }, label: "Gemini 1.5 Pro" },
-];
-
 interface SettingsFormProps {
   textModels: ModelReference[];
   visionModels: ModelReference[];
@@ -62,9 +51,6 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };
-
-  const availableTextModels = (textModels && textModels.length > 0) ? textModels : hardcodedTextModels;
-  const availableVisionModels = (visionModels && visionModels.length > 0) ? visionModels : hardcodedVisionModels;
 
   if (!isMounted) {
     return (
@@ -104,7 +90,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
               <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
             <SelectContent>
-              {availableTextModels.map((model) => (
+              {textModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
                   {getModelLabel(model)}
                 </SelectItem>
@@ -119,7 +105,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
               <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
             <SelectContent>
-              {availableVisionModels.map((model) => (
+              {visionModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
                   {getModelLabel(model)}
                 </SelectItem>
