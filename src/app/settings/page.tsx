@@ -1,5 +1,5 @@
-import '@/ai/genkit'; // Ensure plugins are registered
-import { listModels, type ModelReference } from 'genkit';
+
+import type { ModelReference } from 'genkit';
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -22,10 +22,19 @@ const hardcodedVisionModels: ModelReference[] = [
 
 async function getAvailableModels(): Promise<{ data: ModelReference[] | null; error: string | null; }> {
   try {
-    const allModels = await listModels();
+    // This needs to be an absolute URL on the server, but Next.js fetch can handle relative
+    const baseUrl = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:9002';
+    const response = await fetch(`${baseUrl}/api/models`, { cache: 'no-store' });
+
+    if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `API responded with status ${response.status}`);
+    }
+
+    const allModels: ModelReference[] = await response.json();
     
     if (!allModels || allModels.length === 0) {
-      return { data: null, error: 'No models were returned from the listModels API. Using hardcoded fallbacks.' };
+      return { data: null, error: 'No models were returned from the API. Using hardcoded fallbacks.' };
     }
     
     const supportedModels = allModels.filter(m => 
@@ -35,7 +44,6 @@ async function getAvailableModels(): Promise<{ data: ModelReference[] | null; er
 
     return { data: supportedModels, error: null };
   } catch (e: any) {
-    // Return the specific error message for debugging in the UI
     const errorMessage = `Could not load AI models from API. Reason: ${e.message || 'An unknown error occurred.'}`;
     console.error(e);
     return { 
@@ -56,7 +64,6 @@ export default async function SettingsPage() {
       textModels = hardcodedTextModels;
       visionModels = hardcodedVisionModels;
   } else {
-    // Separate the models into text and vision based on their names
     textModels = models.filter(m => !m.name.includes('vision')) || [];
     visionModels = models.filter(m => m.name.includes('vision') || m.name.includes('flash') || m.name.includes('pro')) || [];
 
