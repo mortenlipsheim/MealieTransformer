@@ -118,7 +118,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
           <Select value={uiLanguage} onValueChange={setUiLanguage}>
             <SelectTrigger id="ui-language">
               <SelectValue placeholder="Select language" />
-            </Trigger>
+            </SelectTrigger>
             <SelectContent>
               {Object.entries(uiLanguages).map(([code, name]) => (
                 <SelectItem key={code} value={code}>{t(name)}</SelectItem>
@@ -131,7 +131,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
           <Select value={targetLanguage} onValueChange={setTargetLanguage}>
             <SelectTrigger id="target-language">
               <SelectValue placeholder="Select language" />
-            </Trigger>
+            </SelectTrigger>
             <SelectContent>
               {Object.entries(targetLanguages).map(([code, name]) => (
                 <SelectItem key={code} value={code}>{t(name)}</SelectItem>
@@ -149,7 +149,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
           >
             <SelectTrigger id="measurement-system">
               <SelectValue placeholder="Select system" />
-            </Trigger>
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="metric">{t('Metric')}</SelectItem>
               <SelectItem value="us">{t('US')}</SelectItem>
