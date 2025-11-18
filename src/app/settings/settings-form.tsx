@@ -22,18 +22,21 @@ import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import type { ModelReference } from "genkit/ai";
 
 
 interface SettingsFormProps {
+    textModels: ModelReference[];
+    visionModels: ModelReference[];
     modelsError: string | null;
 }
 
-export default function SettingsForm({ modelsError }: SettingsFormProps) {
+export default function SettingsForm({ textModels, visionModels, modelsError }: SettingsFormProps) {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
   const [targetLanguage, setTargetLanguage] = useLocalStorage("targetLanguage", "fr");
   const [measurementSystem, setMeasurementSystem] = useLocalStorage("measurementSystem", "metric");
-  const [textModel, setTextModel] = useLocalStorage<string>("textModel", "gemini-1.5-flash-latest");
-  const [visionModel, setVisionModel] = useLocalStorage<string>("visionModel", "gemini-1.5-flash-latest");
+  const [textModel, setTextModel] = useLocalStorage<string>("textModel", "");
+  const [visionModel, setVisionModel] = useLocalStorage<string>("visionModel", "");
   const [isMounted, setIsMounted] = useState(false);
 
   const { t } = useTranslation();
@@ -41,15 +44,6 @@ export default function SettingsForm({ modelsError }: SettingsFormProps) {
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  // Hardcoded model lists to avoid server-side fetching issues.
-  const textModels = [
-    { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
-  ];
-  const visionModels = [
-    { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
-    { name: 'gemini-pro-vision', label: 'Gemini Pro Vision' },
-  ];
 
   if (!isMounted) {
     return (
