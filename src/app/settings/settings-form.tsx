@@ -22,7 +22,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import type { ModelReference } from 'genkit/ai';
+import type { ModelReference } from 'genkit';
 
 interface SettingsFormProps {
   textModels: ModelReference[];
@@ -47,7 +47,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
   const getModelLabel = (model: ModelReference) => {
     if (model.label) return model.label;
     return model.name
-      .split('-')
+      .split(/[-/]/)
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
   };

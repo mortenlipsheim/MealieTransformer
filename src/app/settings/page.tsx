@@ -1,7 +1,7 @@
 
 import 'dotenv/config';
 import '@/ai/genkit'; // Ensure plugins are registered
-import { listModels, type ModelReference } from 'genkit/ai';
+import { listModels, type ModelReference } from 'genkit';
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
@@ -31,7 +31,7 @@ async function getAvailableModels(): Promise<{ data: ModelReference[] | null; er
     }
     
     const supportedModels = allModels.filter(m => 
-      m.supports.generateContent && 
+      m.supports.generate && 
       (m.name.includes('gemini') || m.name.includes('flash') || m.name.includes('pro'))
     );
 
