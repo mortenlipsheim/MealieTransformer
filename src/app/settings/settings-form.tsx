@@ -24,7 +24,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { ModelReference } from 'genkit/ai';
 
-// Define a props interface for type safety and clarity
 interface SettingsFormProps {
   textModels: ModelReference[];
   visionModels: ModelReference[];
@@ -32,22 +31,15 @@ interface SettingsFormProps {
 }
 
 const hardcodedTextModels: ModelReference[] = [
-  { name: 'gemini-1.5-flash-latest', supports: {} },
-  { name: 'gemini-1.5-pro-latest', supports: {} },
-  { name: 'gemini-1.0-pro', supports: {} },
+  { name: 'gemini-1.5-flash-latest', supports: { generate: true } },
+  { name: 'gemini-1.5-pro-latest', supports: { generate: true } },
+  { name: 'gemini-1.0-pro', supports: { generate: true } },
 ];
 
 const hardcodedVisionModels: ModelReference[] = [
-  { name: 'gemini-1.5-flash-latest', supports: {} },
-  { name: 'gemini-1.5-pro-latest', supports: {} },
+  { name: 'gemini-1.5-flash-latest', supports: { generate: true } },
+  { name: 'gemini-1.5-pro-latest', supports: { generate: true } },
 ];
-
-const getModelLabel = (model: ModelReference) => {
-  return model.name
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-};
 
 const SettingsForm = ({ textModels, visionModels, modelsError }: SettingsFormProps) => {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
@@ -62,6 +54,13 @@ const SettingsForm = ({ textModels, visionModels, modelsError }: SettingsFormPro
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const getModelLabel = (model: ModelReference) => {
+    return model.name
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
 
   const availableTextModels = (textModels && textModels.length > 0) ? textModels : hardcodedTextModels;
   const availableVisionModels = (visionModels && visionModels.length > 0) ? visionModels : hardcodedVisionModels;
