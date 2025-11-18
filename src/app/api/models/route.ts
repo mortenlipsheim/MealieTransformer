@@ -1,6 +1,6 @@
 
 import '@/ai/genkit'; // Ensure Genkit is initialized
-import { listModels } from 'genkit';
+import { listModels } from 'genkit/models';
 
 // This is a server-only file
 export const dynamic = 'force-dynamic'; // an API route is required to be dynamic
