@@ -22,21 +22,31 @@ import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import type { ModelReference } from "genkit";
 
-
-interface SettingsFormProps {
-    textModels: ModelReference[];
-    visionModels: ModelReference[];
-    modelsError: string | null;
+// Simplified ModelReference type
+interface ModelReference {
+    name: string;
+    label?: string;
 }
 
-export default function SettingsForm({ textModels, visionModels, modelsError }: SettingsFormProps) {
+const hardcodedTextModels: ModelReference[] = [
+    { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
+    { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
+    { name: 'gemini-1.0-pro', label: 'Gemini 1.0 Pro' },
+];
+
+const hardcodedVisionModels: ModelReference[] = [
+    { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
+    { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
+];
+
+
+export default function SettingsForm() {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
   const [targetLanguage, setTargetLanguage] = useLocalStorage("targetLanguage", "fr");
   const [measurementSystem, setMeasurementSystem] = useLocalStorage("measurementSystem", "metric");
-  const [textModel, setTextModel] = useLocalStorage<string>("textModel", "");
-  const [visionModel, setVisionModel] = useLocalStorage<string>("visionModel", "");
+  const [textModel, setTextModel] = useLocalStorage<string>("textModel", 'gemini-1.5-flash-latest');
+  const [visionModel, setVisionModel] = useLocalStorage<string>("visionModel", 'gemini-1.5-flash-latest');
   const [isMounted, setIsMounted] = useState(false);
 
   const { t } = useTranslation();
@@ -70,20 +80,14 @@ export default function SettingsForm({ textModels, visionModels, modelsError }: 
         <CardDescription>{t('Configure the recipe transformation and translation settings.')}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
-        {modelsError && (
-            <Alert variant="destructive">
-                <AlertTitle>{t('Error')}</AlertTitle>
-                <AlertDescription>{modelsError}</AlertDescription>
-            </Alert>
-        )}
         <div className="grid gap-2">
           <Label htmlFor="text-model">{t('Text Generation Model')}</Label>
-          <Select value={textModel} onValueChange={setTextModel} disabled={!!modelsError}>
+          <Select value={textModel} onValueChange={setTextModel}>
             <SelectTrigger id="text-model">
               <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
             <SelectContent>
-              {textModels?.map((model) => (
+              {hardcodedTextModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
                   {model.label || model.name}
                 </SelectItem>
@@ -93,12 +97,12 @@ export default function SettingsForm({ textModels, visionModels, modelsError }: 
         </div>
         <div className="grid gap-2">
           <Label htmlFor="vision-model">{t('Vision/Image Model')}</Label>
-          <Select value={visionModel} onValueChange={setVisionModel} disabled={!!modelsError}>
+          <Select value={visionModel} onValueChange={setVisionModel}>
             <SelectTrigger id="vision-model">
               <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
             <SelectContent>
-              {visionModels?.map((model) => (
+              {hardcodedVisionModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
                   {model.label || model.name}
                 </SelectItem>
