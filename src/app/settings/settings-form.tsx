@@ -24,6 +24,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { ModelReference } from 'genkit/ai';
 
+// Define a simpler type for our hardcoded models
+type SimpleModel = {
+  name: string;
+  label: string;
+  supports?: ModelReference['supports'];
+  path?: string;
+  version?: string;
+};
+
 export default function SettingsForm({
   textModels: serverTextModels,
   visionModels: serverVisionModels,
@@ -46,13 +55,13 @@ export default function SettingsForm({
     setIsMounted(true);
   }, []);
 
-  const hardcodedTextModels: ModelReference[] = [
+  const hardcodedTextModels: SimpleModel[] = [
     { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
     { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
     { name: 'gemini-1.0-pro', label: 'Gemini 1.0 Pro' },
   ];
   
-  const hardcodedVisionModels: ModelReference[] = [
+  const hardcodedVisionModels: SimpleModel[] = [
     { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
     { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
   ];
