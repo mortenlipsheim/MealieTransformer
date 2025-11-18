@@ -22,12 +22,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-
-// Simplified ModelReference type
-interface ModelReference {
-    name: string;
-    label?: string;
-}
+import type { ModelReference } from 'genkit/ai';
 
 const hardcodedTextModels: ModelReference[] = [
     { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
@@ -40,8 +35,15 @@ const hardcodedVisionModels: ModelReference[] = [
     { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
 ];
 
-
-export default function SettingsForm() {
+export default function SettingsForm({ 
+  textModels, 
+  visionModels,
+  modelsError 
+}: { 
+  textModels: ModelReference[], 
+  visionModels: ModelReference[],
+  modelsError: string | null 
+}) {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
   const [targetLanguage, setTargetLanguage] = useLocalStorage("targetLanguage", "fr");
   const [measurementSystem, setMeasurementSystem] = useLocalStorage("measurementSystem", "metric");
@@ -54,6 +56,9 @@ export default function SettingsForm() {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  const currentTextModels = modelsError ? hardcodedTextModels : textModels;
+  const currentVisionModels = modelsError ? hardcodedVisionModels : visionModels;
 
   if (!isMounted) {
     return (
@@ -80,6 +85,12 @@ export default function SettingsForm() {
         <CardDescription>{t('Configure the recipe transformation and translation settings.')}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
+        {modelsError && (
+            <Alert variant="destructive">
+                <AlertTitle>{t("Error")}</AlertTitle>
+                <AlertDescription>{modelsError}</AlertDescription>
+            </Alert>
+        )}
         <div className="grid gap-2">
           <Label htmlFor="text-model">{t('Text Generation Model')}</Label>
           <Select value={textModel} onValueChange={setTextModel}>
@@ -87,7 +98,7 @@ export default function SettingsForm() {
               <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
             <SelectContent>
-              {hardcodedTextModels.map((model) => (
+              {currentTextModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
                   {model.label || model.name}
                 </SelectItem>
@@ -102,7 +113,7 @@ export default function SettingsForm() {
               <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
             <SelectContent>
-              {hardcodedVisionModels.map((model) => (
+              {currentVisionModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
                   {model.label || model.name}
                 </SelectItem>
