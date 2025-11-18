@@ -22,7 +22,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import type { ModelReference } from "genkit/ai";
+import type { ModelReference } from "genkit";
 
 
 interface SettingsFormProps {
