@@ -1,4 +1,4 @@
-import type { ModelReference } from 'genkit/models';
+import type { ModelReference } from 'genkit';
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 

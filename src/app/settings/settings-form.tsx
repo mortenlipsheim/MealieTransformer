@@ -22,7 +22,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import type { ModelReference } from 'genkit/models';
+import type { ModelReference } from 'genkit';
 
 interface SettingsFormProps {
   textModels: ModelReference[];
@@ -100,7 +100,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
         </div>
         <div className="grid gap-2">
           <Label htmlFor="vision-model">{t('Vision/Image Model')}</Label>
-          <Select value={visionModel} onValueChange={setVisionModel}>
+          <Select value={visionModel} onValuechange={setVisionModel}>
             <SelectTrigger id="vision-model">
               <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
