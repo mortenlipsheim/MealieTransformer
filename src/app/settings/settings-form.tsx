@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -36,8 +35,8 @@ const hardcodedVisionModels: ModelReference[] = [
 ];
 
 export default function SettingsForm({ 
-  textModels, 
-  visionModels,
+  textModels: serverTextModels, 
+  visionModels: serverVisionModels,
   modelsError 
 }: { 
   textModels: ModelReference[], 
@@ -57,8 +56,8 @@ export default function SettingsForm({
     setIsMounted(true);
   }, []);
 
-  const currentTextModels = modelsError ? hardcodedTextModels : textModels;
-  const currentVisionModels = modelsError ? hardcodedVisionModels : visionModels;
+  const textModels = modelsError ? hardcodedTextModels : serverTextModels;
+  const visionModels = modelsError ? hardcodedVisionModels : serverVisionModels;
 
   if (!isMounted) {
     return (
@@ -98,7 +97,7 @@ export default function SettingsForm({
               <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
             <SelectContent>
-              {currentTextModels.map((model) => (
+              {textModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
                   {model.label || model.name}
                 </SelectItem>
@@ -113,7 +112,7 @@ export default function SettingsForm({
               <SelectValue placeholder={t("Select a model")} />
             </SelectTrigger>
             <SelectContent>
-              {currentVisionModels.map((model) => (
+              {visionModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
                   {model.label || model.name}
                 </SelectItem>
