@@ -24,16 +24,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { ModelReference } from 'genkit/ai';
 
-// Define hardcoded models outside the component
-const hardcodedTextModels: { name: string; label: string; }[] = [
-  { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
-  { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
-  { name: 'gemini-1.0-pro', label: 'Gemini 1.0 Pro' },
+const hardcodedTextModels: ModelReference[] = [
+  { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash', supports: {} },
+  { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro', supports: {} },
+  { name: 'gemini-1.0-pro', label: 'Gemini 1.0 Pro', supports: {} },
 ];
 
-const hardcodedVisionModels: { name: string; label: string; }[] = [
-  { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash' },
-  { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro' },
+const hardcodedVisionModels: ModelReference[] = [
+  { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash', supports: {} },
+  { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro', supports: {} },
 ];
 
 const SettingsForm = ({
@@ -172,5 +171,6 @@ const SettingsForm = ({
 };
 
 export default SettingsForm;
+    
 
     
