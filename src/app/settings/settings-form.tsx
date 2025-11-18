@@ -24,20 +24,9 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { ModelReference } from 'genkit/ai';
 
-const hardcodedTextModels: ModelReference[] = [
-  { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash', supports: {} },
-  { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro', supports: {} },
-  { name: 'gemini-1.0-pro', label: 'Gemini 1.0 Pro', supports: {} },
-];
-
-const hardcodedVisionModels: ModelReference[] = [
-  { name: 'gemini-1.5-flash-latest', label: 'Gemini 1.5 Flash', supports: {} },
-  { name: 'gemini-1.5-pro-latest', label: 'Gemini 1.5 Pro', supports: {} },
-];
-
 const SettingsForm = ({
-  textModels,
-  visionModels,
+  textModels: serverTextModels,
+  visionModels: serverVisionModels,
   modelsError
 }: {
   textModels: ModelReference[],
@@ -57,8 +46,28 @@ const SettingsForm = ({
     setIsMounted(true);
   }, []);
 
-  const availableTextModels = (textModels && textModels.length > 0) ? textModels : hardcodedTextModels;
-  const availableVisionModels = (visionModels && visionModels.length > 0) ? visionModels : hardcodedVisionModels;
+  const getModelLabel = (model: ModelReference) => {
+    // A simple function to derive a user-friendly label from the model name
+    return model.name
+      .split('-')
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
+  const hardcodedTextModels: ModelReference[] = [
+    { name: 'gemini-1.5-flash-latest', supports: {} },
+    { name: 'gemini-1.5-pro-latest', supports: {} },
+    { name: 'gemini-1.0-pro', supports: {} },
+  ];
+
+  const hardcodedVisionModels: ModelReference[] = [
+    { name: 'gemini-1.5-flash-latest', supports: {} },
+    { name: 'gemini-1.5-pro-latest', supports: {} },
+  ];
+
+  const availableTextModels = (serverTextModels && serverTextModels.length > 0) ? serverTextModels : hardcodedTextModels;
+  const availableVisionModels = (serverVisionModels && serverVisionModels.length > 0) ? serverVisionModels : hardcodedVisionModels;
+
 
   if (!isMounted) {
     return (
@@ -100,7 +109,7 @@ const SettingsForm = ({
             <SelectContent>
               {availableTextModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
-                  {model.label || model.name}
+                  {model.label || getModelLabel(model)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -115,7 +124,7 @@ const SettingsForm = ({
             <SelectContent>
               {availableVisionModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
-                  {model.label || model.name}
+                  {model.label || getModelLabel(model)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -171,6 +180,3 @@ const SettingsForm = ({
 };
 
 export default SettingsForm;
-    
-
-    
