@@ -23,7 +23,7 @@ const hardcodedVisionModels: ModelReference[] = [
 async function getAvailableModels(): Promise<{ data: ModelReference[] | null; error: string | null; }> {
   try {
     const allModels = await listModels();
-
+    
     if (!allModels || allModels.length === 0) {
       return { data: null, error: 'No models were returned from the listModels API. Using hardcoded fallbacks.' };
     }
