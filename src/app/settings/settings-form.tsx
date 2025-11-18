@@ -24,15 +24,32 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import type { ModelReference } from 'genkit/ai';
 
-const SettingsForm = ({
-  textModels: serverTextModels,
-  visionModels: serverVisionModels,
-  modelsError
-}: {
-  textModels: ModelReference[],
-  visionModels: ModelReference[],
-  modelsError: string | null
-}) => {
+// Define a props interface for type safety and clarity
+interface SettingsFormProps {
+  textModels: ModelReference[];
+  visionModels: ModelReference[];
+  modelsError: string | null;
+}
+
+const hardcodedTextModels: ModelReference[] = [
+  { name: 'gemini-1.5-flash-latest', supports: {} },
+  { name: 'gemini-1.5-pro-latest', supports: {} },
+  { name: 'gemini-1.0-pro', supports: {} },
+];
+
+const hardcodedVisionModels: ModelReference[] = [
+  { name: 'gemini-1.5-flash-latest', supports: {} },
+  { name: 'gemini-1.5-pro-latest', supports: {} },
+];
+
+const getModelLabel = (model: ModelReference) => {
+  return model.name
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
+
+const SettingsForm = ({ textModels, visionModels, modelsError }: SettingsFormProps) => {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
   const [targetLanguage, setTargetLanguage] = useLocalStorage("targetLanguage", "fr");
   const [measurementSystem, setMeasurementSystem] = useLocalStorage("measurementSystem", "metric");
@@ -46,28 +63,8 @@ const SettingsForm = ({
     setIsMounted(true);
   }, []);
 
-  const getModelLabel = (model: ModelReference) => {
-    // A simple function to derive a user-friendly label from the model name
-    return model.name
-      .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
-
-  const hardcodedTextModels: ModelReference[] = [
-    { name: 'gemini-1.5-flash-latest', supports: {} },
-    { name: 'gemini-1.5-pro-latest', supports: {} },
-    { name: 'gemini-1.0-pro', supports: {} },
-  ];
-
-  const hardcodedVisionModels: ModelReference[] = [
-    { name: 'gemini-1.5-flash-latest', supports: {} },
-    { name: 'gemini-1.5-pro-latest', supports: {} },
-  ];
-
-  const availableTextModels = (serverTextModels && serverTextModels.length > 0) ? serverTextModels : hardcodedTextModels;
-  const availableVisionModels = (serverVisionModels && serverVisionModels.length > 0) ? serverVisionModels : hardcodedVisionModels;
-
+  const availableTextModels = (textModels && textModels.length > 0) ? textModels : hardcodedTextModels;
+  const availableVisionModels = (visionModels && visionModels.length > 0) ? visionModels : hardcodedVisionModels;
 
   if (!isMounted) {
     return (
@@ -109,7 +106,7 @@ const SettingsForm = ({
             <SelectContent>
               {availableTextModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
-                  {model.label || getModelLabel(model)}
+                  {getModelLabel(model)}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -124,7 +121,7 @@ const SettingsForm = ({
             <SelectContent>
               {availableVisionModels.map((model) => (
                 <SelectItem key={model.name} value={model.name}>
-                  {model.label || getModelLabel(model)}
+                  {getModelLabel(model)}
                 </SelectItem>
               ))}
             </SelectContent>
