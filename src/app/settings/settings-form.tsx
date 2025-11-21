@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import type { ModelReference } from 'genkit';
 import {
   Card,
   CardContent,
@@ -22,7 +23,7 @@ import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import type { ModelReference } from 'genkit';
+
 
 interface SettingsFormProps {
   textModels: ModelReference[];
