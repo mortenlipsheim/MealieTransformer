@@ -81,7 +81,7 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
         {modelsError && (
             <Alert variant="destructive">
                 <AlertTitle>{t("Error")}</AlertTitle>
-                <AlertDescription>{t("Could not load AI models. Please try again later.")}</AlertDescription>
+                <AlertDescription>{t("Could not load AI models. Please try again later.")} {modelsError}</AlertDescription>
             </Alert>
         )}
         <div className="grid gap-2">

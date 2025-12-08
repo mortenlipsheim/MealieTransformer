@@ -24,7 +24,7 @@ export default async function SettingsPage() {
 
     visionModels = allModels.filter(m =>
       m.supports.generate &&
-      m.name.includes('gemini') && m.name.includes('vision') || m.name.includes('flash') // Flash is multimodal
+      m.name.includes('gemini') && (m.name.includes('vision') || m.name.includes('flash')) // Flash is multimodal
     );
 
   } catch (error: any) {
