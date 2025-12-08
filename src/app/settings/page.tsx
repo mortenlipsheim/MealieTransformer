@@ -6,20 +6,42 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Logo from "@/components/logo";
 import SettingsForm from "./settings-form";
+import { getAvailableModels } from "@/lib/genkit-actions";
+
 
 export default async function SettingsPage() {
-  const textModels: ModelReference[] = [
-    { name: 'gemini-1.5-flash-latest', supports: { generate: true }, label: "Gemini 1.5 Flash" },
-    { name: 'gemini-1.5-pro-latest', supports: { generate: true }, label: "Gemini 1.5 Pro" },
-    { name: 'gemini-1.0-pro', supports: { generate: true }, label: "Gemini 1.0 Pro" },
-  ];
+  let textModels: ModelReference[] = [];
+  let visionModels: ModelReference[] = [];
+  let modelsError: string | null = null;
 
-  const visionModels: ModelReference[] = [
-      { name: 'gemini-1.5-flash-latest', supports: { generate: true }, label: "Gemini 1.5 Flash" },
-      { name: 'gemini-1.5-pro-latest', supports: { generate: true }, label: "Gemini 1.5 Pro" },
-  ];
+  try {
+    const allModels = await getAvailableModels();
 
-  const modelsError = null;
+    textModels = allModels.filter(m =>
+      m.supports.generate &&
+      (m.name.includes('gemini') && !m.name.includes('vision'))
+    );
+
+    visionModels = allModels.filter(m =>
+      m.supports.generate &&
+      m.name.includes('gemini') && m.name.includes('vision') || m.name.includes('flash') // Flash is multimodal
+    );
+
+  } catch (error: any) {
+    console.error("Failed to load models:", error);
+    modelsError = error.message || "Could not load AI models from the API.";
+    
+    // Fallback to a hardcoded list if the API fails
+    textModels = [
+        { name: 'gemini-1.5-flash-latest', supports: { generate: true }, label: "Gemini 1.5 Flash" },
+        { name: 'gemini-1.5-pro-latest', supports: { generate: true }, label: "Gemini 1.5 Pro" },
+        { name: 'gemini-1.0-pro', supports: { generate: true }, label: "Gemini 1.0 Pro" },
+    ];
+    visionModels = [
+        { name: 'gemini-1.5-flash-latest', supports: { generate: true }, label: "Gemini 1.5 Flash" },
+        { name: 'gemini-1.5-pro-latest', supports: { generate: true }, label: "Gemini 1.5 Pro" },
+    ];
+  }
 
 
   return (
