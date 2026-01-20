@@ -19,7 +19,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  serverComponentsExternalPackages: ['genkit'],
 };
 
 export default nextConfig;
