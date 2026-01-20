@@ -9,8 +9,8 @@ To get started, take a look at src/app/page.tsx.
 MEALIE_URL=https://YOURDOMAIN.com
 MEALIE_API_TOKEN=malietoken
 GEMINI_API_KEY=Gemini-API-Key
-GEMINI_TEXT_MODEL_NAME=gemini-2.5-flash
-GEMINI_VISION_MODEL_NAME=gemini-2.5-flash
+GEMINI_TEXT_MODEL_NAME=gemini-1.5-flash
+GEMINI_VISION_MODEL_NAME=gemini-1.5-flash
 ```
 
 
