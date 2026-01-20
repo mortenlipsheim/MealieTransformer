@@ -34,8 +34,6 @@ export default function RecipeInput() {
   // We still use useLocalStorage to set a default value if one doesn't exist
   useLocalStorage("targetLanguage", "en");
   useLocalStorage<"metric" | "us" | "imperial">("measurementSystem", "metric");
-  useLocalStorage<string>("textModel", "");
-  useLocalStorage<string>("visionModel", "");
 
   const [activeTab, setActiveTab] = useState("url");
 
@@ -92,8 +90,6 @@ export default function RecipeInput() {
     // Read directly from localStorage to ensure we have the latest values
     const targetLanguage = JSON.parse(localStorage.getItem("targetLanguage") || '"en"');
     const measurementSystem = JSON.parse(localStorage.getItem("measurementSystem") || '"metric"');
-    const textModel = JSON.parse(localStorage.getItem("textModel") || '""');
-    const visionModel = JSON.parse(localStorage.getItem("visionModel") || '""');
 
     const { data, error } = await handleRecipeTransform({
         source,
@@ -101,8 +97,6 @@ export default function RecipeInput() {
         targetLanguage,
         measurementSystem,
         sourceType,
-        textModel,
-        visionModel,
      });
 
     if (error) {

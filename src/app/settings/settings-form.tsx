@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import type { ModelReference } from 'genkit';
 import {
   Card,
   CardContent,
@@ -22,21 +21,12 @@ import { useLocalStorage } from "@/hooks/use-local-storage";
 import { useTranslation } from "@/hooks/use-translation";
 import { uiLanguages, targetLanguages } from "@/lib/translations";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 
-interface SettingsFormProps {
-  textModels: ModelReference[];
-  visionModels: ModelReference[];
-  modelsError: string | null;
-}
-
-const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, modelsError }) => {
+const SettingsForm: React.FC = () => {
   const [uiLanguage, setUiLanguage] = useLocalStorage("uiLanguage", "en");
   const [targetLanguage, setTargetLanguage] = useLocalStorage("targetLanguage", "fr");
   const [measurementSystem, setMeasurementSystem] = useLocalStorage("measurementSystem", "metric");
-  const [textModel, setTextModel] = useLocalStorage<string>("textModel", 'gemini-1.5-flash-latest');
-  const [visionModel, setVisionModel] = useLocalStorage<string>("visionModel", 'gemini-1.5-flash-latest');
   const [isMounted, setIsMounted] = useState(false);
 
   const { t } = useTranslation();
@@ -44,14 +34,6 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
   useEffect(() => {
     setIsMounted(true);
   }, []);
-
-  const getModelLabel = (model: ModelReference) => {
-    if (model.label) return model.label;
-    return model.name
-      .split(/[-/]/)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-  };
 
   if (!isMounted) {
     return (
@@ -61,8 +43,6 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
           <Skeleton className="h-4 w-1/2" />
         </CardHeader>
         <CardContent className="grid gap-6">
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
           <Skeleton className="h-10 w-full" />
@@ -78,42 +58,6 @@ const SettingsForm: React.FC<SettingsFormProps> = ({ textModels, visionModels, m
         <CardDescription>{t('Configure the recipe transformation and translation settings.')}</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-6">
-        {modelsError && (
-            <Alert variant="destructive">
-                <AlertTitle>{t("Error")}</AlertTitle>
-                <AlertDescription>{t("Could not load AI models. Please try again later.")} {modelsError}</AlertDescription>
-            </Alert>
-        )}
-        <div className="grid gap-2">
-          <Label htmlFor="text-model">{t('Text Generation Model')}</Label>
-          <Select value={textModel} onValueChange={setTextModel} disabled={!textModels.length}>
-            <SelectTrigger id="text-model">
-              <SelectValue placeholder={t("Select a model")} />
-            </SelectTrigger>
-            <SelectContent>
-              {textModels.map((model) => (
-                <SelectItem key={model.name} value={model.name}>
-                  {getModelLabel(model)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="grid gap-2">
-          <Label htmlFor="vision-model">{t('Vision/Image Model')}</Label>
-          <Select value={visionModel} onValueChange={setVisionModel} disabled={!visionModels.length}>
-            <SelectTrigger id="vision-model">
-              <SelectValue placeholder={t("Select a model")} />
-            </SelectTrigger>
-            <SelectContent>
-              {visionModels.map((model) => (
-                <SelectItem key={model.name} value={model.name}>
-                  {getModelLabel(model)}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
         <div className="grid gap-2">
           <Label htmlFor="ui-language">{t('UI Language')}</Label>
           <Select value={uiLanguage} onValueChange={setUiLanguage}>

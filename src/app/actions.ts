@@ -30,30 +30,22 @@ export async function handleRecipeTransform({
   targetLanguage,
   measurementSystem,
   sourceType = 'text',
-  textModel,
-  visionModel,
 }: {
   source?: string;
   sourceImages?: string[];
   targetLanguage: string;
   measurementSystem: 'metric' | 'us' | 'imperial';
   sourceType: 'url' | 'text' | 'image';
-  textModel: string;
-  visionModel: string;
 }): Promise<ActionResult<Recipe>> {
 
   try {
     let recipeText: string | undefined;
 
-    if (!textModel || !visionModel) {
-        return { data: null, error: 'Text and Vision models must be selected in Settings.' };
-    }
-
     if (sourceType === 'image') {
         if (!sourceImages || sourceImages.length === 0) {
             return { data: null, error: 'No images provided for transformation.' };
         }
-      const extractedTextData = await extractRecipeFromImage({ modelName: visionModel, imageDataUris: sourceImages });
+      const extractedTextData = await extractRecipeFromImage({ modelName: 'gemini-2.5-flash', imageDataUris: sourceImages });
       recipeText = extractedTextData.recipeText;
 
     } else if (sourceType === 'url') {
@@ -72,7 +64,7 @@ export async function handleRecipeTransform({
     const languageName = targetLanguages[targetLanguage] || targetLanguage;
 
     const finalData = await transformRecipe({
-        modelName: textModel,
+        modelName: 'gemini-2.5-flash',
         recipeText: recipeText,
         targetLanguage: languageName,
         measurementSystem,
