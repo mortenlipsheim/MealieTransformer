@@ -149,7 +149,7 @@ export default function RecipeInput() {
       const context = canvas.getContext('2d');
       if (context) {
         context.drawImage(video, 0, 0, videoWidth, videoHeight);
-        const dataUrl = canvas.toDataURL('image/png');
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
         setImageToCrop(dataUrl);
       }
     }

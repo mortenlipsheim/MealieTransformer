@@ -31,7 +31,8 @@ export default function CropperDialog({
     if (cropperRef.current) {
       const canvas = cropperRef.current.getCanvas();
       if (canvas) {
-        onConfirm(canvas.toDataURL());
+        // Output as a high-quality JPEG to reduce file size
+        onConfirm(canvas.toDataURL("image/jpeg", 0.9));
       }
     }
   };
