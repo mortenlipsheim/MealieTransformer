@@ -38,6 +38,13 @@ export async function handleRecipeTransform({
   sourceType: 'url' | 'text' | 'image';
 }): Promise<ActionResult<Recipe>> {
 
+  const textModelName = process.env.GEMINI_TEXT_MODEL_NAME;
+  const visionModelName = process.env.GEMINI_VISION_MODEL_NAME;
+
+  if (!textModelName || !visionModelName) {
+    return { data: null, error: "GEMINI_TEXT_MODEL_NAME and GEMINI_VISION_MODEL_NAME must be set in your environment variables." };
+  }
+
   try {
     let recipeText: string | undefined;
 
@@ -45,7 +52,7 @@ export async function handleRecipeTransform({
         if (!sourceImages || sourceImages.length === 0) {
             return { data: null, error: 'No images provided for transformation.' };
         }
-      const extractedTextData = await extractRecipeFromImage({ modelName: 'gemini-2.5-flash', imageDataUris: sourceImages });
+      const extractedTextData = await extractRecipeFromImage({ modelName: visionModelName, imageDataUris: sourceImages });
       recipeText = extractedTextData.recipeText;
 
     } else if (sourceType === 'url') {
@@ -64,7 +71,7 @@ export async function handleRecipeTransform({
     const languageName = targetLanguages[targetLanguage] || targetLanguage;
 
     const finalData = await transformRecipe({
-        modelName: 'gemini-2.5-flash',
+        modelName: textModelName,
         recipeText: recipeText,
         targetLanguage: languageName,
         measurementSystem,
